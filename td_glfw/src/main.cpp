@@ -2,7 +2,10 @@
 
 #include <GLFW/glfw3.h>
 
-int main(void)
+#include <chrono>
+#include <iostream>
+
+int main()
 {
     GLFWwindow* window;
 
@@ -24,6 +27,7 @@ int main(void)
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
+
         glClearColor(1.0, 0.0, 0.0, 1.0);
 
         /* Render here */

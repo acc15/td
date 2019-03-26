@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 3.13)
 project(td_core)
 
-set(CMAKE_CXX_STANDARD 17)
-
-find_package(OpenGL REQUIRED)
 add_library(td_core STATIC src/main.cpp)
-target_link_libraries(td_core ${OPENGL_LIBRARY})
+target_link_libraries(td_core OpenGL::GL PNG::PNG)
 
 add_executable(td_core_test test/main.cpp)
+target_link_libraries(td_core_test Catch2::Catch2 td_core)
+catch_discover_tests(td_core_test)
