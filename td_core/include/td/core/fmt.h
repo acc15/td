@@ -11,7 +11,7 @@ namespace td {
     typedef std::ostringstream fmts;
 
     std::string fmt_str(const std::ostream &stream) {
-        return dynamic_cast<const std::ostringstream*>(&stream)->str();
+        return dynamic_cast<const std::ostringstream&>(stream).str();
     }
 
 }
