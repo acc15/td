@@ -1,65 +1,82 @@
-#include <GL/gl.h>
+#include <td/core/gl.h>
 
 #include <GLFW/glfw3.h>
 
-#include <chrono>
 #include <iostream>
 
 #include <td/core/img.h>
-#include <cstring>
-#include <iomanip>
+#include <td/core/shader.h>
 
-int main()
-{
-    td::img i;
+static void glfw_error_callback(int, const char *description) {
+    std::cerr << "GLFW error: " << description << std::endl;
+}
 
-    std::ifstream in("example.png", std::ios_base::binary);
-    if (!in) {
-        std::cout << "cant open " << strerror(errno) << std::endl;
+bool init_glew() {
+    const GLenum glew_ok = glewInit();
+    if (glew_ok != GLEW_OK) {
+        std::cerr << "Unable to initialize GLEW: " << glewGetErrorString(glew_ok) << std::endl;
+        return false;
+    }
+    std::cout << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
+    return true;
+}
+
+int run_glfw_window(GLFWwindow* window) {
+
+    glfwMakeContextCurrent(window);
+    if (!init_glew()) {
         return -1;
     }
 
-    i.load_png(in);
+    try {
 
-    std::cout << i.width() << "x" << i.height() << " (depth " << static_cast<size_t>(i.depth()) << "; color type: " << i.ctype() << ")" << std::endl;
+        td::shader s(td::VERTEX, "uint8 i;");
 
-    uint32_t* pp = reinterpret_cast<uint32_t*>(i.data());
-    for (size_t i = 0; i < 100; i++) {
-        std::cout << std::setw(2) << std::setfill('0') << std::hex << pp[i] << std::endl;
+        GLuint shader_id = s.id();
+        std::cout << "shader id is " << shader_id << std::endl;
+
+        while (!glfwWindowShouldClose(window)) {
+
+            int width, height;
+            glfwGetFramebufferSize(window, &width, &height);
+            glViewport(0, 0, width, height);
+            glClearColor(0, 0.2, 0, 1);
+            glClear(GL_COLOR_BUFFER_BIT);
+            glfwSwapBuffers(window);
+            glfwPollEvents();
+        }
+
+    } catch (const std::exception& e) {
+        std::cerr << "uncaught exception: " << e.what() << std::endl;
+        return -1;
+    } catch (...) {
+        std::cerr << "unexpected unknown exception" << std::endl;
+        return -1;
     }
 
-//    GLFWwindow* window;
-//
-//    /* Initialize the library */
-//    if (!glfwInit())
-//        return -1;
-//
-//    /* Create a windowed mode window and its OpenGL context */
-//    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-//    if (!window) {
-//        glfwTerminate();
-//        return -1;
-//    }
-//
-//    /* Make the window's context current */
-//    glfwMakeContextCurrent(window);
-//
-//    /* Loop until the user closes the window */
-//    while (!glfwWindowShouldClose(window))
-//    {
-//
-//        glClearColor(1.0, 0.0, 0.0, 1.0);
-//
-//        /* Render here */
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//
-//        /* Swap front and back buffers */
-//        glfwSwapBuffers(window);
-//
-//        /* Poll for and process events */
-//        glfwPollEvents();
-//    }
-//
-//    glfwTerminate();
     return 0;
+}
+
+
+int run_glfw() {
+    GLFWwindow* window = glfwCreateWindow(640, 480, "Simple example", NULL, NULL);
+    if (!window) {
+        return -1;
+    }
+
+    int ret = run_glfw_window(window);
+    glfwDestroyWindow(window);
+    return ret;
+}
+
+int main() {
+    glfwSetErrorCallback(glfw_error_callback);
+
+    if (!glfwInit()) {
+        return -1;
+    }
+
+    int ret = run_glfw();
+    glfwTerminate();
+    return ret;
 }

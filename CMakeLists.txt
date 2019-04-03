@@ -14,6 +14,7 @@ option(GLFW_BUILD_DOCS OFF)
 add_subdirectory(ext/glfw)
 
 find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
 find_package(PNG REQUIRED)
 
 add_subdirectory(td_core)
