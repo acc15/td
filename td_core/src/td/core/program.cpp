@@ -1,13 +1,15 @@
 #include <td/core/program.h>
 
-program::program(): _id(0) {
+namespace td {
+
+program::program() : _id(0) {
 }
 
 program::program(program&& mv) noexcept: _id(mv._id), _internals(std::move(mv._internals)), _externals(std::move(mv._externals)) {
     mv._id = 0;
 }
 
-program& program::operator=(program &&mv) noexcept {
+program& program::operator=(program&& mv) noexcept {
     rm();
     std::swap(_id, mv._id);
     _internals = std::move(mv._internals);
@@ -15,14 +17,26 @@ program& program::operator=(program &&mv) noexcept {
     return *this;
 }
 
-program&& program::add(td::shader&& mv) {
+program&& program::add(shader&& mv) {
     _internals.push_back(mv);
     return std::move(*this);
 }
 
-program&& program::add(td::shader& cp) {
+program&& program::add(shader& cp) {
     _externals.push_back(std::ref(cp));
     return std::move(*this);
+}
+
+program&& program::add(shader_type type, const char* src) {
+    return add(std::move(shader(type, src)));
+}
+
+program&& program::vertex(const char* src) {
+    return add(VERTEX, src);
+}
+
+program&& program::fragment(const char* src) {
+    return add(FRAGMENT, src);
 }
 
 GLuint program::id() {
@@ -75,4 +89,7 @@ void program::rm() {
 
     glDeleteProgram(_id);
     _id = 0;
+}
+
+
 }

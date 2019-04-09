@@ -5,7 +5,7 @@
 namespace td {
 
 enum shader_type {
-    VERTEX = 0,
+    VERTEX = GL_VERTEX_SHADER,
     FRAGMENT = GL_FRAGMENT_SHADER
 };
 

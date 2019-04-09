@@ -6,6 +6,8 @@
 #include <td/core/gl.h>
 #include <td/core/shader.h>
 
+namespace td {
+
 class program {
 public:
 
@@ -17,8 +19,11 @@ public:
     program& operator=(program&& mv) noexcept;
     program& operator=(const program& cp) = delete;
 
-    program&& add(td::shader&& mv);
-    program&& add(td::shader& cp);
+    program&& add(shader&& mv);
+    program&& add(shader& cp);
+    program&& add(shader_type type, const char* src);
+    program&& vertex(const char* src);
+    program&& fragment(const char* src);
 
     GLuint id();
     void rm();
@@ -26,7 +31,9 @@ public:
 private:
 
     GLuint _id;
-    std::vector<td::shader> _internals;
-    std::vector<std::reference_wrapper<td::shader>> _externals;
+    std::vector<shader> _internals;
+    std::vector<std::reference_wrapper<shader>> _externals;
 
 };
+
+}

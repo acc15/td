@@ -4,12 +4,47 @@
 
 #include <iostream>
 
-#include <td/core/img.h>
-#include <td/core/shader.h>
+#include <td/core/program.h>
 
 static void glfw_error_callback(int, const char *description) {
     std::cerr << "GLFW error: " << description << std::endl;
 }
+
+void draw_game(size_t width, size_t height) {
+    glViewport(0, 0, width, height);
+    glClearColor(0, 0.2, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void init_game() {
+
+    std::cout << "Using OpenGL v" << glGetString(GL_VERSION) << std::endl;
+
+    td::program p = td::program()
+            .vertex(R"(
+#version 330 core
+layout (location = 0) in vec3 aPos;
+out vec4 vertexColor;
+void main()
+{
+    gl_Position = vec4(aPos, 1.0);
+    vertexColor = vec4(0.5, 0.0, 0.0, 1.0);
+}
+)").fragment(R"(
+#version 330 core
+out vec4 FragColor;
+in vec4 vertexColor;
+void main()
+{
+    FragColor = vertexColor;
+}
+)");
+
+
+    std::cout << "program id is " << p.id() << std::endl;
+
+}
+
 
 bool init_glew() {
     const GLenum glew_ok = glewInit();
@@ -30,18 +65,14 @@ int run_glfw_window(GLFWwindow* window) {
 
     try {
 
-        td::shader s(td::VERTEX, "uint8 i;");
-
-        GLuint shader_id = s.id();
-        std::cout << "shader id is " << shader_id << std::endl;
+        init_game();
 
         while (!glfwWindowShouldClose(window)) {
 
             int width, height;
             glfwGetFramebufferSize(window, &width, &height);
-            glViewport(0, 0, width, height);
-            glClearColor(0, 0.2, 0, 1);
-            glClear(GL_COLOR_BUFFER_BIT);
+            draw_game(width, height);
+
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
