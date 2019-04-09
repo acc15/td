@@ -23,8 +23,8 @@ public:
     };
 
 private:
-    size_t _height;
     size_t  _width;
+    size_t _height;
     uint8_t _depth;
     color_type _ctype;
     uint8_t _channels;

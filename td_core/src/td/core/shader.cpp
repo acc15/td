@@ -1,13 +1,13 @@
-#include <td/core/shader.h>
-#include <td/core/exception.h>
-#include <td/core/fmt.h>
-
+#include <stdexcept>
 #include <string>
 #include <sstream>
 
+#include <td/core/shader.h>
+#include <td/core/fmt.h>
+
 namespace td {
 
-shader::shader(shader_type type, const char *src): _type(type), _src(src) {
+shader::shader(shader_type type, const char *src): _id(0), _type(type), _src(src) {
 }
 
 shader::~shader() {
@@ -21,7 +21,9 @@ GLuint shader::id() {
 
     GLuint id = glCreateShader(_type);
     if (id == 0) {
-        throw td::exception(fmt_str(fmts() << "Unable to create shader of type " << _type << ". OpenGL error: " << std::hex << glGetError()));
+        throw std::runtime_error(fmt_str(fmts()
+                                         << "Unable to create shader of type "
+                                         << _type << ". OpenGL error: " << std::hex << glGetError()));
     }
     glShaderSource(id, 1, &_src, nullptr);
     glCompileShader(id);
@@ -39,7 +41,7 @@ GLuint shader::id() {
     std::string info_log(log_size, '\0');
     glGetShaderInfoLog(id, log_size, nullptr, info_log.data());
 
-    throw td::exception("Unable to compile shader: " + info_log);
+    throw std::runtime_error("Unable to compile shader: " + info_log);
 }
 
 void shader::rm() {

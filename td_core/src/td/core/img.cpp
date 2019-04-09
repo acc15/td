@@ -37,11 +37,11 @@ img::color_type png_color_type_to_img_color_type(png_byte ct) {
 
 void png_read_from_stream(png_structp png_ptr, png_bytep buf, size_t sz) {
     std::istream& in = *static_cast<std::istream*>(png_get_io_ptr(png_ptr));
-    in.read(reinterpret_cast<char*>(buf), sz);
+    in.read(reinterpret_cast<char*>(buf), static_cast<std::streamsize>(sz));
 }
 
 
-img::img() : _width(0), _height(0), _ctype(img::color_type::UNKNOWN), _depth(0), _data(nullptr) {
+img::img() : _width(0), _height(0), _ctype(img::color_type::UNKNOWN), _depth(0), _channels(0), _data(nullptr) {
 }
 
 

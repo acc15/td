@@ -3,7 +3,6 @@ project(td_core)
 add_library(td_core STATIC
         src/td/core/img.cpp
         src/td/core/shader.cpp
-        src/td/core/exception.cpp
         src/td/core/program.cpp
         )
 target_link_libraries(td_core PNG::PNG GLEW::GLEW)
