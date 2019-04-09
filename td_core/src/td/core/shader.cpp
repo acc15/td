@@ -7,7 +7,7 @@
 
 namespace td {
 
-shader::shader(shader_type type, const char *src): _id(0), _type(type), _src(src) {
+shader::shader(shader_type type, const char *src): _id(0), _src(src), _type(type) {
 }
 
 shader::~shader() {
