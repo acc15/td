@@ -5,6 +5,11 @@
 
 namespace td {
 
+template <typename T>
+constexpr size_t array_length(const T&) {
+    return std::extent<T>::value;
+}
+
 enum class color_component {
     R, G, B, A, MAX
 };
@@ -45,6 +50,16 @@ struct color_schema {
 };
 
 
+constexpr const color_component INDEX_RGBA[4] = {
+        color_component::R,
+        color_component::G,
+        color_component::B,
+        color_component::A
+};
+
+typedef color_schema<array_length(INDEX_RGBA), INDEX_RGBA> color_schema_rgba;
+
+
 template <typename T, typename Spec = void>
 struct type_color_component_limits {
     constexpr static T max() {
@@ -77,12 +92,12 @@ public:
 
     template <typename U>
     U get(color_component c, const U& max_value) {
-
+        int i = comp_layout::index_of(c);
+        return i < 0 ? max_value : color_component_cast(_data[i], get_component_limit(c), max_value);
     }
 
-
 private:
-    std::array<T, 3> _data;
+    std::array<T, S::comp_count> _data;
 
 };
 

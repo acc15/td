@@ -3,12 +3,6 @@
 
 using namespace td;
 
-template <typename T>
-constexpr size_t array_length(const T&) {
-    return std::extent<T>::value;
-}
-
-
 constexpr const color_component INDEX_RGBA[] = {
     color_component::B,
     color_component::A,
