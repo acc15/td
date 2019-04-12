@@ -6,12 +6,18 @@
 
 #include <td/core/img.h>
 #include <td/core/shader.h>
+#include <td/core/color.h>
 
 static void glfw_error_callback(int, const char *description) {
     std::cerr << "GLFW error: " << description << std::endl;
 }
 
 bool init_glew() {
+
+    std::cout << td::type_color_component_limits<float>::max() << std::endl;
+    std::cout << td::type_color_component_limits<int>::max() << std::endl;
+
+
     const GLenum glew_ok = glewInit();
     if (glew_ok != GLEW_OK) {
         std::cerr << "Unable to initialize GLEW: " << glewGetErrorString(glew_ok) << std::endl;
@@ -30,7 +36,7 @@ int run_glfw_window(GLFWwindow* window) {
 
     try {
 
-        td::shader s(td::VERTEX, "uint8 i;");
+        td::shader s(GL_VERTEX_SHADER, "uint8 i;");
 
         GLuint shader_id = s.id();
         std::cout << "shader id is " << shader_id << std::endl;
