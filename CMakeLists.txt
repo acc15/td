@@ -16,6 +16,7 @@ add_subdirectory(ext/glfw EXCLUDE_FROM_ALL)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(PNG REQUIRED)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 add_subdirectory(td_core)
 add_subdirectory(td_glfw)

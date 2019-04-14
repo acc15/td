@@ -27,16 +27,16 @@ program&& program::add(shader& cp) {
     return std::move(*this);
 }
 
-program&& program::add(shader_type type, const char* src) {
+program&& program::add(GLenum type, const char* src) {
     return add(std::move(shader(type, src)));
 }
 
 program&& program::vertex(const char* src) {
-    return add(VERTEX, src);
+    return add(GL_VERTEX_SHADER, src);
 }
 
 program&& program::fragment(const char* src) {
-    return add(FRAGMENT, src);
+    return add(GL_FRAGMENT_SHADER, src);
 }
 
 GLuint program::id() {

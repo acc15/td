@@ -21,7 +21,7 @@ public:
 
     program&& add(shader&& mv);
     program&& add(shader& cp);
-    program&& add(shader_type type, const char* src);
+    program&& add(GLenum type, const char* src);
     program&& vertex(const char* src);
     program&& fragment(const char* src);
 

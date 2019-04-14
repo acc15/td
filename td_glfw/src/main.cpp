@@ -13,11 +13,6 @@ static void glfw_error_callback(int, const char *description) {
 }
 
 bool init_glew() {
-
-    std::cout << td::type_color_component_limits<float>::max() << std::endl;
-    std::cout << td::type_color_component_limits<int>::max() << std::endl;
-
-
     const GLenum glew_ok = glewInit();
     if (glew_ok != GLEW_OK) {
         std::cerr << "Unable to initialize GLEW: " << glewGetErrorString(glew_ok) << std::endl;
