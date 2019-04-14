@@ -7,7 +7,7 @@
 
 namespace td {
 
-shader::shader(shader_type type, const char *src): _id(0), _src(src), _type(type) {
+shader::shader(GLenum type, const char *src): _id(0), _src(src), _type(type) {
 }
 
 shader::~shader() {
@@ -56,7 +56,7 @@ const char *shader::src() const {
     return _src;
 }
 
-shader_type shader::type() const {
+GLenum shader::type() const {
     return _type;
 }
 
