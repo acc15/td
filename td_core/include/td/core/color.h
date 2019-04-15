@@ -5,7 +5,6 @@
 
 namespace td {
 
-
 template <typename T>
 constexpr size_t array_length(const T&) noexcept {
     return std::extent<T>::value;
@@ -23,14 +22,14 @@ template <typename E, E Max>
 class enum_indexer {
 public:
     template <typename T>
-    constexpr int find_component_index(const T& comps, const E& c, size_t i = 0) {
-        return i >= array_length(comps) ? -1 : comps[i] == c ? i : find_component_index(comps, c, i + 1);
-    }
-
-    template <typename T>
     constexpr explicit enum_indexer(const T& inp): _indexes() {
         for (size_t i = 0; i < _indexes.size(); i++) {
-            _indexes[i] = find_component_index(inp, static_cast<E>(i));
+            _indexes[i] = -1;
+        }
+
+        const size_t sz = array_length(inp);
+        for (size_t i = 0; i < sz; i++) {
+            _indexes[static_cast<size_t>(inp[i])] = i;
         }
     }
 
@@ -40,6 +39,31 @@ public:
 
 private:
     std::array<int, static_cast<size_t>(Max)> _indexes;
+};
+
+
+template <typename E, E M, size_t N>
+class enum_sorter {
+public:
+    constexpr explicit enum_sorter(const E in[N]): _sorted() {
+        std::array<size_t, static_cast<size_t>(M)> ck = std::array<size_t, static_cast<size_t>(M)>();
+        for (size_t i = 0; i < N; i++) {
+            ++ck[static_cast<size_t>(in[i])];
+        }
+        for (size_t i = 0, j = 0; i < static_cast<size_t>(M); i++) {
+            for (size_t n = ck[i]; n > 0; --n, ++j) {
+                _sorted[j] = static_cast<E>(i);
+            }
+        }
+    }
+
+    constexpr const E& at(size_t i) const {
+        return _sorted[i];
+    }
+
+private:
+    std::array<E, N> _sorted;
+
 };
 
 struct color_layout_rgb {
@@ -94,12 +118,27 @@ struct color: public Storage {
     typedef typename Storage::type type;
     typedef typename Storage::layout layout;
 
-    constexpr static const size_t num_components = array_length(layout::layout);
+
+    constexpr static size_t num_components() {
+        return array_length(layout::layout);
+    }
+
     constexpr static const enum_indexer<color_component, color_component::MAX> indexer =
             enum_indexer<color_component, color_component::MAX>(layout::layout);
 
+    constexpr static const enum_sorter<color_component, color_component::MAX, num_components()> sorter =
+            enum_sorter<color_component, color_component::MAX, num_components()>(layout::layout);
+
     constexpr static int index_of(color_component comp) {
         return indexer.index_of(comp);
+    }
+
+    constexpr static color_component component_at(size_t i) {
+        return layout::layout[i];
+    }
+
+    constexpr static color_component sorted_component_at(size_t i) {
+        return sorter.at(i);
     }
 
     color(): Storage() {
@@ -125,7 +164,7 @@ struct color: public Storage {
     }
 
     constexpr size_t size() const {
-        return num_components;
+        return num_components();
     }
 
     type get(color_component c) {

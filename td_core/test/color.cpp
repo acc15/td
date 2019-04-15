@@ -14,6 +14,11 @@ TEST_CASE( "color", "[color_schema]" ) {
     v.set(color_component::ALPHA, 40);
 
 
+    for (size_t i = 0; i < color_bgra::num_components(); i++) {
+        WARN("v " << static_cast<size_t>(color_bgra::sorted_component_at(i)));
+    }
+
+
     //INFO(v);
 
 
