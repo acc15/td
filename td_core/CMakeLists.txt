@@ -4,7 +4,7 @@ add_library(td_core STATIC
         src/td/core/img.cpp
         src/td/core/shader.cpp
         src/td/core/program.cpp
-        include/td/core/color.cpp include/td/core/color.h)
+        include/td/core/color.h)
 target_link_libraries(td_core PNG::PNG GLEW::GLEW)
 target_include_directories(td_core PUBLIC include)
 

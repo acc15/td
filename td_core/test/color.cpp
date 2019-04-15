@@ -13,6 +13,7 @@ TEST_CASE( "color", "[color_schema]" ) {
     v.set(color_component::BLUE, 30);
     v.set(color_component::ALPHA, 40);
 
+
     //INFO(v);
 
 

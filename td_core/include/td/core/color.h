@@ -19,26 +19,27 @@ enum class color_component {
     MAX
 };
 
-template <size_t N>
-class color_component_indexer {
+template <typename E, E Max>
+class enum_indexer {
 public:
-    constexpr int find_component_index(const color_component comps[N], color_component c, size_t i = 0) {
-        return i >= N ? -1 :
-               comps[i] == c ? i : find_component_index(comps, c, i + 1);
+    template <typename T>
+    constexpr int find_component_index(const T& comps, const E& c, size_t i = 0) {
+        return i >= array_length(comps) ? -1 : comps[i] == c ? i : find_component_index(comps, c, i + 1);
     }
 
-    constexpr explicit color_component_indexer(const color_component L[N]): _indexes() {
-        for (size_t i = 0; i < static_cast<size_t>(color_component::MAX); i++) {
-            _indexes[i] = find_component_index(L, static_cast<color_component>(i));
+    template <typename T>
+    constexpr explicit enum_indexer(const T& inp): _indexes() {
+        for (size_t i = 0; i < _indexes.size(); i++) {
+            _indexes[i] = find_component_index(inp, static_cast<E>(i));
         }
     }
 
-    constexpr int index_of(color_component c) const {
+    constexpr int index_of(const E& c) const {
         return _indexes[static_cast<size_t>(c)];
     }
 
 private:
-    int _indexes[static_cast<size_t>(color_component::MAX)];
+    std::array<int, static_cast<size_t>(Max)> _indexes;
 };
 
 struct color_layout_rgb {
@@ -94,7 +95,8 @@ struct color: public Storage {
     typedef typename Storage::layout layout;
 
     constexpr static const size_t num_components = array_length(layout::layout);
-    constexpr static const color_component_indexer<num_components> indexer = color_component_indexer<num_components>(layout::layout);
+    constexpr static const enum_indexer<color_component, color_component::MAX> indexer =
+            enum_indexer<color_component, color_component::MAX>(layout::layout);
 
     constexpr static int index_of(color_component comp) {
         return indexer.index_of(comp);
@@ -116,13 +118,13 @@ struct color: public Storage {
 
     template <typename T>
     void assign(const color<T>& other) {
-        for (size_t i = 0; i < num_components; i++) {
+        for (size_t i = 0; i < Storage::size(); i++) {
             color_component c = layout::layout[i];
             Storage::set_raw(i, other.template get<type>(c, Storage::get_limit(c)));
         }
     }
 
-    size_t size() const {
+    constexpr size_t size() const {
         return num_components;
     }
 
@@ -175,7 +177,7 @@ struct array_color {
     }
 
 private:
-    type _data[array_length(layout::layout)];
+    std::array<type, array_length(layout::layout)> _data;
 
 };
 
