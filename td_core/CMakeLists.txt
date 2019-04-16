@@ -1,10 +1,16 @@
 project(td_core)
 
+
 add_library(td_core STATIC
         src/td/core/img.cpp
+        include/td/core/img.h
         src/td/core/shader.cpp
+        include/td/core/shader.h
         src/td/core/program.cpp
-        include/td/core/color.h)
+        include/td/core/program.h
+        src/td/buffer/buffer.cpp
+        include/td/buffer/buffer.h
+        include/td/core/color.h src/td/buffer/buffer_object.cpp include/td/buffer/buffer_object.h)
 target_link_libraries(td_core PNG::PNG GLEW::GLEW)
 target_include_directories(td_core PUBLIC include)
 

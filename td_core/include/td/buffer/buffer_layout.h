@@ -11,6 +11,8 @@ public:
 
     vbo_layout& add(GLenum type, size_t count);
 
+    size_t offset(size_t index) const;
+
     /**
      * Offset in bytes for nth attribute
      * @param item attribute index

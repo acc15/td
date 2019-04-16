@@ -7,10 +7,23 @@
 #include <td/core/img.h>
 #include <td/core/shader.h>
 #include <td/core/color.h>
+#include <td/buffer/buffer.h>
 
 static void glfw_error_callback(int, const char *description) {
     std::cerr << "GLFW error: " << description << std::endl;
 }
+
+td::typed_buffer<unsigned short> my_buf;
+
+void init_game() {
+
+}
+
+void draw_game() {
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
 
 bool init_glew() {
     const GLenum glew_ok = glewInit();
@@ -31,18 +44,16 @@ int run_glfw_window(GLFWwindow* window) {
 
     try {
 
-        td::shader s(GL_VERTEX_SHADER, "uint8 i;");
-
-        GLuint shader_id = s.id();
-        std::cout << "shader id is " << shader_id << std::endl;
+        init_game();
 
         while (!glfwWindowShouldClose(window)) {
 
             int width, height;
             glfwGetFramebufferSize(window, &width, &height);
             glViewport(0, 0, width, height);
-            glClearColor(0, 0.2, 0, 1);
-            glClear(GL_COLOR_BUFFER_BIT);
+
+            draw_game();
+
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
@@ -60,7 +71,7 @@ int run_glfw_window(GLFWwindow* window) {
 
 
 int run_glfw() {
-    GLFWwindow* window = glfwCreateWindow(640, 480, "Simple example", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(640, 480, "Simple example", nullptr, nullptr);
     if (!window) {
         return -1;
     }
