@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include <td/core/img.h>
-#include <td/core/shader.h>
+#include <td/gl/shader.h>
 #include <td/core/color.h>
 #include <td/buffer/buffer.h>
 

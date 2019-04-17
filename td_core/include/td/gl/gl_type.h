@@ -12,7 +12,7 @@ struct gl_type_def {
 
 template <typename T>
 struct gl_type {
-    static_assert(false, "unknown OpenGL type");
+    // static_assert(false, "unknown OpenGL type");
 };
 
 template <> struct gl_type<GLdouble>: public gl_type_def<GLfloat, GL_DOUBLE> {};

@@ -1,4 +1,4 @@
-#include <td/core/program.h>
+#include <td/gl/program.h>
 
 namespace td {
 

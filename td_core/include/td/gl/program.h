@@ -4,7 +4,7 @@
 #include <functional>
 
 #include <td/gl/gl.h>
-#include <td/core/shader.h>
+#include <td/gl/shader.h>
 
 namespace td {
 

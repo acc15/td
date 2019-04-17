@@ -8,12 +8,9 @@
 
 namespace td {
 
-template <typename BufferType>
+template <typename BufferType, GLenum Type>
 class buffer_object {
 public:
-
-    buffer_object(GLenum type): _type(type) {
-    }
 
     ~buffer_object() {
         rm();
@@ -23,27 +20,20 @@ public:
         return _buf;
     }
 
-    /*
-    buffer_object& data(const void* ptr, size_t size) {
-        _buf.free();
-        _ptr = ptr;
-        _size = size;
-    }*/
-
     buffer_object& bind() {
-        glBindBuffer(_type, id());
+        glBindBuffer(Type, id());
         return *this;
     }
 
     buffer_object& unbind() {
-        glBindBuffer(_type, 0);
+        glBindBuffer(Type, 0);
         return *this;
     }
 
     buffer_object& apply(GLenum usage) {
 
         bind();
-        glBufferData(_type, _buf.size(), _buf.data(), usage);
+        glBufferData(Type, _buf.size(), _buf.data(), usage);
         unbind();
 
         if (usage == GL_STATIC_DRAW) {
@@ -71,17 +61,18 @@ public:
     }
 
 private:
-    GLenum _type;
     GLuint _id;
 
     BufferType _buf;
 
 };
 
-typedef buffer_object<buffer> vbo;
+typedef buffer_object<buffer, GL_ARRAY_BUFFER> vbo;
+typedef buffer_object<static_buffer, GL_ARRAY_BUFFER> static_vbo;
+typedef buffer_object<static_buffer, GL_ELEMENT_ARRAY_BUFFER> static_ebo;
 
 template <typename IndexType>
-using ebo = buffer_object<typed_buffer<IndexType>>;
+using ebo = buffer_object<typed_buffer<IndexType>, GL_ELEMENT_ARRAY_BUFFER>;
 
 
 }

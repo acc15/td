@@ -51,7 +51,7 @@ class buffer: public buffer_base<unsigned char, buffer> {
 public:
     template <typename T>
     buffer& operator<<(const T& data) {
-        return buffer_base<unsigned char, buffer>::put(&data, sizeof(T));
+        return buffer_base<unsigned char, buffer>::put(reinterpret_cast<const unsigned char*>(&data), sizeof(T));
     }
 };
 
@@ -61,6 +61,23 @@ public:
     typed_buffer& operator<<(const T& data) {
         return buffer_base<T, typed_buffer<T>>::put(&data, 1);
     }
+};
+
+class static_buffer {
+public:
+    static_buffer();
+    static_buffer(const void* data, size_t size);
+
+    static_buffer& data(const void* data, size_t size);
+
+    const void* data() const;
+    size_t size() const;
+    size_t count() const;
+
+private:
+    size_t _size;
+    const void* _data;
+
 };
 
 
