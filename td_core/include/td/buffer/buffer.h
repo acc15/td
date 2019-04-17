@@ -37,7 +37,7 @@ public:
     Impl& put(const element_type* src, size_t count) {
         const size_t offset = _data.size();
         _data.resize(offset + count);
-        std::memcpy(_data.data() + offset, src, count * sizeof(element_type));
+        std::copy(src, src + count, _data.data() + offset);
         return static_cast<Impl&>(*this);
     }
 
