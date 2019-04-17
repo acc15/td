@@ -1,4 +1,4 @@
-#include <td/core/gl.h>
+#include <td/gl/gl.h>
 
 #include <GLFW/glfw3.h>
 

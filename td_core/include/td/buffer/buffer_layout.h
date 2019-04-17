@@ -2,12 +2,18 @@
 
 #include <vector>
 
-#include <td/core/gl.h>
+#include <td/gl/gl.h>
+#include <td/gl/gl_type.h>
 
 namespace td {
 
 class vbo_layout {
 public:
+
+    template <typename T>
+    vbo_layout& add(size_t count) {
+        return add(gl_type<T>::value, count);
+    }
 
     vbo_layout& add(GLenum type, size_t count);
 
