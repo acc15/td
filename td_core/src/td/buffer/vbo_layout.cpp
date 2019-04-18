@@ -36,8 +36,17 @@ GLsizei vbo_layout::stride() const {
     return _items.empty() ? 0 : _items.back().offset;
 }
 
-void vbo_layout::apply() const {
+void vbo_layout::disable() const {
+    for (size_t i = 0; i < _items.size(); i++) {
+        glDisableVertexAttribArray(i);
+    }
+}
 
+void vbo_layout::enable() const {
+    for (size_t i = 0; i < _items.size(); i++) {
+        glEnableVertexAttribArray(i);
+        glVertexAttribPointer(i, count(i), type(i), false, stride(), ptr(i));
+    }
 }
 
 

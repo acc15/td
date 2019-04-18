@@ -10,6 +10,20 @@ namespace td {
 class vbo_layout {
 public:
 
+    template <typename T>
+    vbo_layout& add(size_t count) {
+        return add(gl_type<T>::value, count);
+    }
+
+    inline vbo_layout& f(size_t count) { return add(GL_FLOAT, count); }
+    inline vbo_layout& d(size_t count) { return add(GL_DOUBLE, count); }
+    inline vbo_layout& i(size_t count) { return add(GL_INT, count); }
+    inline vbo_layout& ui(size_t count) { return add(GL_UNSIGNED_INT, count); }
+    inline vbo_layout& b(size_t count) { return add(GL_BYTE, count); }
+    inline vbo_layout& ub(size_t count) { return add(GL_UNSIGNED_BYTE, count); }
+    inline vbo_layout& s(size_t count) { return add(GL_SHORT, count); }
+    inline vbo_layout& us(size_t count) { return add(GL_UNSIGNED_SHORT, count); }
+
     vbo_layout& add(GLenum type, size_t count);
 
     size_t items() const;
@@ -50,7 +64,8 @@ public:
      */
     GLsizei stride() const;
 
-    void apply() const;
+    void enable() const;
+    void disable() const;
 
 private:
 
