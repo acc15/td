@@ -11,11 +11,11 @@ add_library(td_core STATIC
         include/td/buffer/buffer.h
         include/td/core/color.h
         include/td/buffer/buffer_object.h
-        src/td/buffer/buffer_layout.cpp
+        src/td/buffer/vbo_layout.cpp
         include/td/gl/gl_type.h src/td/buffer/buffer.cpp)
 target_link_libraries(td_core PNG::PNG GLEW::GLEW)
 target_include_directories(td_core PUBLIC include)
 
-add_executable(td_core_test test/main.cpp test/td/buffer/buffer.cpp test/color.cpp)
+add_executable(td_core_test test/main.cpp test/td/buffer/buffer.cpp test/color.cpp test/td/buffer/vbo_layout.cpp)
 target_link_libraries(td_core_test Catch2::Catch2 td_core)
 catch_discover_tests(td_core_test)

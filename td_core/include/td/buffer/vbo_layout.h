@@ -10,8 +10,9 @@ namespace td {
 class vbo_layout {
 public:
 
-
     vbo_layout& add(GLenum type, size_t count);
+
+    size_t items() const;
 
     size_t offset(size_t index) const;
 
@@ -49,7 +50,6 @@ public:
      */
     GLsizei stride() const;
 
-
     void apply() const;
 
 private:
@@ -57,8 +57,8 @@ private:
     struct vbo_item {
         GLenum type;
         size_t count;
+        size_t offset;
     };
-
 
     std::vector<vbo_item> _items;
 
