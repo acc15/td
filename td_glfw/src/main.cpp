@@ -4,24 +4,53 @@
 
 #include <iostream>
 
-#include <td/core/img.h>
-#include <td/gl/shader.h>
-#include <td/core/color.h>
-#include <td/buffer/buffer.h>
+#include <td/gl/program.h>
+#include <td/core/buffer.h>
+#include <td/gl/vbo_layout.h>
 
-static void glfw_error_callback(int, const char *description) {
-    std::cerr << "GLFW error: " << description << std::endl;
+namespace td {
+
+class drawer {
+
+
+public:
+    drawer(program& p);
+
+    drawer& layout(const vbo_layout& layout);
+    //drawer& buf(const buffer_object& bo);
+    // drawer& uniform()
+
+    void draw(GLenum mode) {
+        glDrawArrays(mode, 0, 10);
+        glDrawElements(mode, )
+    }
+
+};
+
 }
 
-td::typed_buffer<unsigned short> my_buf;
+td::program p1 = td::program().add(td::shader(GL_VERTEX_SHADER, "")).add(td::shader(GL_FRAGMENT_SHADER, ""));
+td::vbo_layout l = td::vbo_layout().f(3).f(4).f(3);
+
 
 void init_game() {
+
+    td::buffer buf;
+    buf << 1 << 2 << 3;
+
+    vbo.apply(td::buffer() << 1 << 2 << 3, GL_STATIC_DRAW);
 
 }
 
 void draw_game() {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    td::drawer(p1)
+        //.vbo()
+        //.ebo()
+        .draw(GL_TRIANGLES);
+
 }
 
 
@@ -79,6 +108,10 @@ int run_glfw() {
     int ret = run_glfw_window(window);
     glfwDestroyWindow(window);
     return ret;
+}
+
+static void glfw_error_callback(int, const char *description) {
+    std::cerr << "GLFW error: " << description << std::endl;
 }
 
 int main() {

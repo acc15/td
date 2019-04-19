@@ -8,9 +8,9 @@ add_library(td_core STATIC
         include/td/gl/shader.h
         src/td/gl/program.cpp
         include/td/gl/program.h
-        include/td/buffer/buffer.h
+        include/td/core/buffer.h
         include/td/core/color.h
-        include/td/buffer/buffer_object.h
+        include/td/gl/buffer_object.h
         src/td/buffer/vbo_layout.cpp
         include/td/gl/gl_type.h src/td/buffer/buffer.cpp)
 target_link_libraries(td_core PNG::PNG GLEW::GLEW)

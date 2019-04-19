@@ -1,5 +1,5 @@
 #include <catch2/catch.hpp>
-#include <td/buffer/vbo_layout.h>
+#include <td/gl/vbo_layout.h>
 
 const td::vbo_layout test_layout = td::vbo_layout().f(3).ub(2).i(4);
 

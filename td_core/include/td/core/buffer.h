@@ -68,6 +68,9 @@ public:
     static_buffer();
     static_buffer(const void* data, size_t size);
 
+    static_buffer& reset();
+    static_buffer& free();
+
     static_buffer& data(const void* data, size_t size);
 
     const void* data() const;

@@ -1,4 +1,4 @@
-#include <td/buffer/buffer.h>
+#include <td/core/buffer.h>
 
 namespace td {
 
@@ -24,6 +24,16 @@ size_t static_buffer::size() const {
 
 size_t static_buffer::count() const {
     return _size;
+}
+
+static_buffer& static_buffer::free() {
+    return reset();
+}
+
+static_buffer& static_buffer::reset() {
+    _data = nullptr;
+    _size = 0;
+    return *this;
 }
 
 }

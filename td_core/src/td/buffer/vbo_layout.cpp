@@ -1,4 +1,4 @@
-#include <td/buffer/vbo_layout.h>
+#include <td/gl/vbo_layout.h>
 
 namespace td {
 
