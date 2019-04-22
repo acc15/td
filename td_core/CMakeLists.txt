@@ -12,7 +12,7 @@ add_library(td_core STATIC
         include/td/core/color.h
         include/td/gl/buffer_object.h
         src/td/buffer/vbo_layout.cpp
-        include/td/gl/gl_type.h src/td/buffer/buffer.cpp)
+        include/td/gl/type.h)
 target_link_libraries(td_core PNG::PNG GLEW::GLEW)
 target_include_directories(td_core PUBLIC include)
 

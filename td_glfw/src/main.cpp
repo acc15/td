@@ -6,39 +6,77 @@
 
 #include <td/gl/program.h>
 #include <td/core/buffer.h>
+#include <td/gl/buffer_object.h>
 #include <td/gl/vbo_layout.h>
 
 namespace td {
 
 class drawer {
-
-
 public:
-    drawer(program& p);
+    drawer(program& p): _program(p), _vbo(nullptr), _vbo_layout(nullptr), _ebo(nullptr) {
+        glUseProgram(p.id());
+    }
 
-    drawer& layout(const vbo_layout& layout);
-    //drawer& buf(const buffer_object& bo);
-    // drawer& uniform()
+    drawer& ebo(ebo& ebo) {
+        _ebo = &ebo;
+        return *this;
+    }
+
+    drawer& vbo(vbo& vbo, const vbo_layout& layout) {
+        _vbo = &vbo;
+        _vbo_layout = &layout;
+        return *this;
+    }
+
+    template <typename T>
+    drawer& uniform(const char* name, const T& value) {
+
+        glUniform2dv()
+        glUniform1d(glGetUniformLocation())
+        glUniform2d()
+
+    }
 
     void draw(GLenum mode) {
-        glDrawArrays(mode, 0, 10);
-        glDrawElements(mode, )
+        if (_vbo != nullptr) {
+            _vbo->bind();
+            _vbo_layout->enable();
+        }
+        if (_ebo != nullptr) {
+            _ebo->bind();
+        }
+        if (_ebo != nullptr) {
+            glDrawElements(mode, _ebo->count(), _ebo->type(), nullptr);
+        } else if (_vbo != nullptr) {
+            glDrawArrays(mode, 0, _vbo->size() / _vbo_layout->stride());
+        }
+        if (_ebo != nullptr) {
+            _ebo->unbind();
+        }
+        if (_vbo != nullptr) {
+            _vbo_layout->disable();
+            _vbo->unbind();
+        }
     }
+
+private:
+    program& _program;
+    td::vbo* _vbo;
+    const td::vbo_layout* _vbo_layout;
+    td::ebo* _ebo;
 
 };
 
 }
 
 td::program p1 = td::program().add(td::shader(GL_VERTEX_SHADER, "")).add(td::shader(GL_FRAGMENT_SHADER, ""));
+td::vbo vbo;
 td::vbo_layout l = td::vbo_layout().f(3).f(4).f(3);
 
 
 void init_game() {
 
-    td::buffer buf;
-    buf << 1 << 2 << 3;
-
-    vbo.apply(td::buffer() << 1 << 2 << 3, GL_STATIC_DRAW);
+    vbo.bind_and_apply(td::buffer() << 1 << 2 << 3, GL_STATIC_DRAW);
 
 }
 

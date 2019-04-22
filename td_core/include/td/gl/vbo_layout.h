@@ -3,7 +3,7 @@
 #include <vector>
 
 #include <td/gl/gl.h>
-#include <td/gl/gl_type.h>
+#include <td/gl/type.h>
 
 namespace td {
 
@@ -12,7 +12,7 @@ public:
 
     template <typename T>
     vbo_layout& add(size_t count) {
-        return add(gl_type<T>::value, count);
+        return add(t2gl<T>::value, count);
     }
 
     inline vbo_layout& f(size_t count) { return add(GL_FLOAT, count); }
@@ -70,6 +70,7 @@ public:
 private:
 
     struct vbo_item {
+        GLuint location;
         GLenum type;
         size_t count;
         size_t offset;

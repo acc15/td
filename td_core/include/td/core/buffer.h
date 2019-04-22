@@ -63,22 +63,48 @@ public:
     }
 };
 
+template <typename Type>
 class static_buffer {
 public:
-    static_buffer();
-    static_buffer(const void* data, size_t size);
 
-    static_buffer& reset();
-    static_buffer& free();
+    typedef Type element_type;
 
-    static_buffer& data(const void* data, size_t size);
+    static_buffer(): _data(nullptr), _count(0) {
+    }
 
-    const void* data() const;
-    size_t size() const;
-    size_t count() const;
+    static_buffer(const Type* data, size_t count): _data(data), _count(size) {
+    }
+
+    static_buffer& free() {
+        return reset();
+    }
+
+    static_buffer& reset() {
+        _data = nullptr;
+        _count = 0;
+        return *this;
+    }
+
+    static_buffer& data(const Type* data, size_t count) {
+        _data = data;
+        _count = count;
+        return *this;
+    }
+
+    const void* data() const {
+        return _data;
+    }
+
+    size_t size() const {
+        return _count;
+    }
+
+    size_t count() const {
+        return _count;
+    }
 
 private:
-    size_t _size;
+    size_t _count;
     const void* _data;
 
 };

@@ -3,7 +3,12 @@
 namespace td {
 
 vbo_layout& vbo_layout::add(GLenum type, size_t count) {
-    _items.push_back({ type, count, stride() + gl_sizeof(type) * count });
+    _items.push_back({
+        static_cast<GLuint>(_items.size()),
+        type,
+        count,
+        stride() + gl_sizeof(type) * count
+    });
     return *this;
 }
 
