@@ -1,5 +1,5 @@
 #include <catch2/catch.hpp>
-#include <td/buffer/buffer.h>
+#include <td/core/buffer.h>
 
 TEST_CASE("move ctor", "[static_buffer]" ) {
 

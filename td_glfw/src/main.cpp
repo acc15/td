@@ -4,24 +4,22 @@
 
 #include <iostream>
 
-#include <td/core/img.h>
-#include <td/gl/shader.h>
-#include <td/core/color.h>
-#include <td/buffer/buffer.h>
-
-static void glfw_error_callback(int, const char *description) {
-    std::cerr << "GLFW error: " << description << std::endl;
-}
-
-td::typed_buffer<unsigned short> my_buf;
+#include <td/gl/program.h>
+#include <td/core/buffer.h>
+#include <td/gl/buffer_object.h>
+#include <td/gl/vbo_layout.h>
 
 void init_game() {
+
+    // vbo.bind_and_apply(td::buffer() << 1 << 2 << 3, GL_STATIC_DRAW);
 
 }
 
 void draw_game() {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
+
+
 }
 
 
@@ -81,6 +79,10 @@ int run_glfw() {
     return ret;
 }
 
+static void glfw_error_callback(int, const char* description) {
+    std::cerr << "GLFW error: " << description << std::endl;
+}
+
 int main() {
     glfwSetErrorCallback(glfw_error_callback);
 
@@ -92,3 +94,4 @@ int main() {
     glfwTerminate();
     return ret;
 }
+
