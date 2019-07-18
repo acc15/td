@@ -142,22 +142,23 @@ gen_conf parse_cmdline(int argc, const char* argv[]) {
 
 void print_usage() {
     std::cout << "Usage: " << std::endl
-              << "[-d] - output directory" << std::endl
-              << "[-p] - default namespace" << std::endl
-              << "*(" << std::endl
+              << std::endl
+              << "    [-d] - output directory (default to current working directory)" << std::endl
+              << "    [-p] - default namespace (defaults to no namespace)" << std::endl
               << "    *(" << std::endl
-              << "        -i - input file" << std::endl
-              << "        [-v] - optional variable name (defaults to uppercase filename without extension)" << std::endl
-              << "        [-n] - optional namespace (defaults to no namespace)" << std::endl
-              << "    )" << std::endl
-              << "    any("
-              << "        ("
-              << "            -o - output file prefix (relative to output directory (see '-o') " << std::endl
+              << "        *(" << std::endl
+              << "            -i - input file" << std::endl
+              << "            [-v] - optional variable name (defaults to uppercase filename without extension)" << std::endl
+              << "            [-n] - optional namespace (defaults to '-p' namespace)" << std::endl
               << "        )" << std::endl
-              << "        ("
-              << "            -h - output header file " << std::endl
-              << "            -c - output cpp file " << std::endl
+              << "        any(" << std::endl
+              << "            (" << std::endl
+              << "                -o - output file prefix (relative to output directory (see '-d') " << std::endl
+              << "            )" << std::endl
+              << "            (" << std::endl
+              << "                -h - output header file " << std::endl
+              << "                -c - output cpp file " << std::endl
+              << "            )" << std::endl
               << "        )" << std::endl
-              << "    )" << std::endl
-              << ")" << std::endl;
+              << "    )" << std::endl;
 }
