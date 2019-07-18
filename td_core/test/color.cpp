@@ -1,32 +1,18 @@
 #include <catch2/catch.hpp>
 #include <td/core/color.h>
 
+#include <iostream>
+
 using namespace td;
 
-
-TEST_CASE( "color", "[color_schema]" ) {
-
-
-    color_bgra v;
-    v.set(color_component::RED, 10);
-    v.set(color_component::GREEN, 20);
-    v.set(color_component::BLUE, 30);
-    v.set(color_component::ALPHA, 40);
+TEST_CASE("Vector4f to Vector3f and vice versa", "[color]" ) {
 
 
-    for (size_t i = 0; i < color_bgra::num_components(); i++) {
-        WARN("v " << static_cast<size_t>(color_bgra::sorted_component_at(i)));
-    }
+    Eigen::Vector4f red = { 1.0, 0.0, 0.0, 1.0 };
+
+    Eigen::RowVector3f redW = red.head(3);
+
+    std::cout << redW << std::endl;
 
 
-    //INFO(v);
-
-
-    /*
-    for (size_t i = 0; i < array_length(INDEX_RGBA); i++) {
-        color_component comp = INDEX_RGBA[i];
-        const size_t actual_index = color_schema_rgba::index_of(comp);
-
-        CHECK(actual_index == i);
-    }*/
 }

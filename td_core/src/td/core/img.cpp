@@ -41,7 +41,7 @@ void png_read_from_stream(png_structp png_ptr, png_bytep buf, size_t sz) {
 }
 
 
-img::img() : _width(0), _height(0), _ctype(img::color_type::UNKNOWN), _depth(0), _channels(0), _data(nullptr) {
+img::img() : _width(0), _height(0), _depth(0), _ctype(img::color_type::UNKNOWN), _channels(0), _data(nullptr) {
 }
 
 

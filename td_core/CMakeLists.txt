@@ -13,7 +13,7 @@ add_library(td_core STATIC
         include/td/buffer/buffer_object.h
         src/td/buffer/buffer_layout.cpp
         include/td/gl/gl_type.h src/td/buffer/buffer.cpp)
-target_link_libraries(td_core PNG::PNG GLEW::GLEW)
+target_link_libraries(td_core PNG::PNG GLEW::GLEW Eigen3::Eigen)
 target_include_directories(td_core PUBLIC include)
 
 add_executable(td_core_test test/main.cpp test/td/buffer/buffer.cpp test/color.cpp)

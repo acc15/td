@@ -5,7 +5,7 @@ namespace td {
 static_buffer::static_buffer(): static_buffer(nullptr, 0) {
 }
 
-static_buffer::static_buffer(const void* data, size_t size): _data(data), _size(size) {
+static_buffer::static_buffer(const void* data, size_t size): _size(size), _data(data) {
 }
 
 static_buffer& static_buffer::data(const void* data, size_t size) {
