@@ -1,5 +1,11 @@
+
+
 #include "cmdline.h"
+#include "targets.h"
 #include "gen.h"
+
+#include <iostream>
+#include <iomanip>
 
 int main(int argc, const char* argv[]) {
 
@@ -9,6 +15,7 @@ int main(int argc, const char* argv[]) {
     }
 
     gen_conf conf = parse_cmdline(argc, argv);
-    generate_files(conf);
+    std::vector<target> targets = make_targets(conf);
+    generate_files(targets);
     return 0;
 }

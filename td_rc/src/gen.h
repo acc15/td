@@ -1,5 +1,5 @@
 #pragma once
 
-#include "cmdline.h"
+#include "targets.h"
 
-void generate_files(const gen_conf& conf);
+void generate_files(const std::vector<target>& targets);
