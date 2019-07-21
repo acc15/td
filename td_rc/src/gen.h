@@ -2,4 +2,4 @@
 
 #include "targets.h"
 
-void generate_files(const std::vector<target>& targets);
+void generate_files(const target_map& targets);

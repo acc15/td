@@ -61,11 +61,11 @@ bool create_parent_dir(const std::filesystem::path& p) {
     return true;
 }
 
-void generate_header(const std::filesystem::path& output_path, const target_input_map& inputs) {
+void generate_header(const std::filesystem::path& output_path, const target& t) {
     std::cout << "Generating header file to " << output_path << "..." << std::endl;
 
     std::ofstream out(output_path, std::ios_base::out | std::ios_base::trunc);
-    for (const auto& ns_entry: inputs) {
+    for (const auto& ns_entry: t.inputs) {
         print_ns_start(out, ns_entry.first);
         for (const auto& i: ns_entry.second) {
             out << "extern ";
@@ -76,15 +76,17 @@ void generate_header(const std::filesystem::path& output_path, const target_inpu
     }
 }
 
-void generate_cpp(const std::filesystem::path& output_path, const std::filesystem::path& header_path, const target_input_map& inputs) {
+void generate_cpp(const std::filesystem::path& output_path, const target& t) {
     std::cout << "Generating CPP file to " << output_path << "..." << std::endl;
 
-    const std::filesystem::path header_include_path = header_path.lexically_relative(output_path.parent_path());
 
     std::ofstream out(output_path, std::ios_base::out | std::ios_base::trunc);
-    out << "#include " << header_include_path << std::endl;
 
-    for (const auto& ns_entry: inputs) {
+    for (const std::filesystem::path& dep: t.dependencies) {
+        out << "#include " << dep.lexically_relative(output_path.parent_path()) << std::endl;
+    }
+
+    for (const auto& ns_entry: t.inputs) {
         print_ns_start(out, ns_entry.first);
         for (const auto& i: ns_entry.second) {
             std::ifstream in(i.second, std::ios_base::in | std::ios_base::binary);
@@ -102,18 +104,24 @@ void generate_cpp(const std::filesystem::path& output_path, const std::filesyste
     }
 }
 
-void generate(const target& t) {
-
-    if (!create_parent_dir(t.header_path) || !create_parent_dir(t.cpp_path)) {
+void generate(const std::filesystem::path& output_path, const target& t) {
+    if (!create_parent_dir(output_path)) {
         return;
     }
-    generate_header(t.header_path, t.inputs);
-    generate_cpp(t.cpp_path, t.header_path, t.inputs);
+    switch (t.type) {
+        case HEADER:
+            generate_header(output_path, t);
+            break;
+
+        case CPP:
+            generate_cpp(output_path, t);
+            break;
+    }
 }
 
-void generate_files(const std::vector<target>& targets) {
+void generate_files(const target_map& targets) {
     std::cout << "Current working dir is " << std::filesystem::current_path() << std::endl;
-    for (const target& t: targets) {
-        generate(t);
+    for (const target_map::value_type& pair: targets) {
+        generate(pair.first, pair.second);
     }
 }

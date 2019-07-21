@@ -15,7 +15,7 @@ int main(int argc, const char* argv[]) {
     }
 
     gen_conf conf = parse_cmdline(argc, argv);
-    std::vector<target> targets = make_targets(conf);
+    target_map targets = make_targets(conf);
     generate_files(targets);
     return 0;
 }

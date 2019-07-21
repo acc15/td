@@ -1,6 +1,6 @@
 #include <iostream>
 #include <algorithm>
-#include <unordered_set>
+
 #include "targets.h"
 
 std::vector<std::string> parse_namespace(const std::string& str) {
@@ -66,16 +66,36 @@ target_input_map make_target_inputs(const gen_conf& conf, const gen_def& def, co
     return inputs;
 }
 
-
-struct path_hasher {
-    size_t operator()(const std::filesystem::path& p) const {
-        return std::filesystem::hash_value(p);
+void merge_inputs(target_map& tm, const std::filesystem::path& p, const target_type& type, const target_input_map& inputs, const dependency_set& deps) {
+    if (tm.count(p) == 0) {
+        tm[p] = {type, deps, inputs};
+        return;
     }
-};
 
-typedef std::unordered_map<std::filesystem::path, std::reference_wrapper<target>, path_hasher> target_ref_map;
+    target& t = tm[p];
+    if (t.type != type) {
+        std::cout << "[WARNING] " << (type == HEADER ? "Header" : "CPP") << " file " << p << " output duplicated. Check input options" << std::endl;
+        tm[p] = {type, deps, inputs};
+        return;
+    }
 
-std::vector<target> make_targets(const gen_conf& conf) {
+    t.dependencies.insert(deps.begin(), deps.end());
+
+    for (const auto& ns_entry: inputs) {
+        auto& t_vars = t.inputs[ns_entry.first];
+        for (const auto& var_entry: ns_entry.second) {
+            if (t_vars.count(var_entry.first)) {
+                std::cout << "[WARNING] Duplicate variable '" << var_entry.first << "' for input "
+                          << var_entry.second << " will overwrite input from " << t_vars[var_entry.first] << std::endl;
+            }
+            t_vars[var_entry.first] = var_entry.second;
+        }
+    }
+
+}
+
+
+target_map make_targets(const gen_conf& conf) {
 
     std::filesystem::path out_dir;
     if (conf.output_dir) {
@@ -98,46 +118,21 @@ std::vector<target> make_targets(const gen_conf& conf) {
     }
 
 
-    std::vector<target> targets;
-    std::unordered_set<std::filesystem::path, path_hasher> used_paths;
+    target_map tm;
     for (const gen_def& def: conf.defs) {
 
         std::filesystem::path header_path = header_dir;
         std::filesystem::path cpp_path = src_dir;
 
-        if (def.output.prefix != nullptr) {
-
-            header_path /= def.output.prefix;
-            header_path += ".hpp";
-
-            cpp_path /= def.output.prefix;
-            cpp_path += ".cpp";
-
-        } else {
-
-            header_path /= def.output.header;
-            cpp_path /= def.output.cpp;
-
-        }
-
-
-        if (used_paths.count(header_path) > 0) {
-            std::cout << "[ERROR] Header file " << header_path << " already used. Check options." << std::endl;
-            continue;
-        }
-        if (used_paths.count(cpp_path) > 0) {
-            std::cout << "[ERROR] CPP file " << cpp_path << " already used. Check options." << std::endl;
-            continue;
-        }
+        header_path /= def.output.header ? def.output.header : std::filesystem::path(def.output.prefix).concat(".hpp");
+        cpp_path /= def.output.cpp ? def.output.cpp : std::filesystem::path(def.output.prefix).concat(".cpp");
 
         target_input_map inputs = make_target_inputs(conf, def, input_dir);
-        targets.push_back({ header_path, cpp_path, inputs });
-
-        used_paths.insert(header_path);
-        used_paths.insert(cpp_path);
+        merge_inputs(tm, header_path, HEADER, inputs, {});
+        merge_inputs(tm, cpp_path, CPP, inputs, { header_path });
 
     }
 
-    return targets;
+    return tm;
 }
 
