@@ -1,4 +1,5 @@
 #include "cmdline.h"
+#include "gen.h"
 
 int main(int argc, const char* argv[]) {
 
@@ -8,5 +9,6 @@ int main(int argc, const char* argv[]) {
     }
 
     gen_conf conf = parse_cmdline(argc, argv);
+    generate_files(conf);
     return 0;
 }

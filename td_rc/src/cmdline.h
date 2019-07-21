@@ -21,8 +21,11 @@ struct gen_def {
 
 struct gen_conf {
 
-    const char* dir;
-    const char* ns;
+    const char* output_dir;
+    const char* header_dir;
+    const char* src_dir;
+    const char* input_dir;
+    const char* default_ns;
 
     std::vector<gen_def> defs;
 };
