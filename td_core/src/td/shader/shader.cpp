@@ -2,7 +2,7 @@
 #include <string>
 #include <sstream>
 
-#include <td/gl/shader.h>
+#include <td/shader/shader.h>
 #include <td/core/fmt.h>
 
 namespace td {

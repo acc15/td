@@ -1,27 +1,20 @@
 #include <td/gl/gl.h>
 
 #include <GLFW/glfw3.h>
-
 #include <iostream>
 
-#include <td/gl/program.h>
 #include <td/core/buffer.h>
-#include <td/gl/buffer_object.h>
-#include <td/gl/vbo_layout.h>
 
 #include "res.hpp"
 
 void init_game() {
 
-    // vbo.bind_and_apply(td::buffer() << 1 << 2 << 3, GL_STATIC_DRAW);
-
 }
 
-void draw_game() {
+void draw_frame() {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 }
-
 
 bool init_glew() {
     const GLenum glew_ok = glewInit();
@@ -50,7 +43,7 @@ int run_glfw_window(GLFWwindow* window) {
             glfwGetFramebufferSize(window, &width, &height);
             glViewport(0, 0, width, height);
 
-            draw_game();
+            draw_frame();
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -84,11 +77,7 @@ static void glfw_error_callback(int, const char* description) {
 }
 
 int main() {
-
-    std::cout << ::MY_SHADER << std::endl;
-
     glfwSetErrorCallback(glfw_error_callback);
-
     if (!glfwInit()) {
         return -1;
     }

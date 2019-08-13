@@ -9,6 +9,6 @@
 #elif defined(__linux__) || defined(WIN32)
 #   include <GL/glew.h>
 #else
-#   error "Your platform isnt supported at the moment"
+#   error "Your platform isn't supported at the moment"
 #endif
 

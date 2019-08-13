@@ -3,8 +3,8 @@
 #include <vector>
 #include <functional>
 
-#include <td/gl/gl.h>
-#include <td/gl/shader.h>
+#include "../gl/gl.h"
+#include "shader.h"
 
 namespace td {
 

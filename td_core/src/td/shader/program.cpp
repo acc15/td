@@ -1,4 +1,4 @@
-#include <td/gl/program.h>
+#include <td/shader/program.h>
 
 namespace td {
 

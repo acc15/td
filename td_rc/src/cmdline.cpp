@@ -144,32 +144,30 @@ gen_conf parse_cmdline(int argc, const char* argv[]) {
 }
 
 void print_usage() {
-    std::cout << "Usage: " << std::endl
-              << std::endl
-              << "    [-d] - output directory (default to current working directory)" << std::endl
-              << "    [-id] - input directory" << std::endl
-              << "    [-hd] - output headers directory" << std::endl
-              << "    [-cd] - output cpp directory" << std::endl
-              << "    [-dn] - default namespace (defaults to no namespace)" << std::endl
-              << "    *(" << std::endl
-              << "        *(" << std::endl
-              << "            -i - input file(s), allows multiple sequence of input files (multiple arguments)" << std::endl
-              << "            [-v] - optional variable name (defaults to uppercase filename without extension)" << std::endl
-              << "            [-n] - optional namespace (defaults to '-p' namespace)" << std::endl
-              << "        )" << std::endl
-              << "        any(" << std::endl
-              << "            (" << std::endl
-              << "                -o - output file prefix (relative to output directory (see '-d') " << std::endl
-              << "            )" << std::endl
-              << "            (" << std::endl
-              << "                -h - output header file " << std::endl
-              << "                -c - output cpp file " << std::endl
-              << "            )" << std::endl
-              << "        )" << std::endl
-              << "    )" << std::endl
-              << std::endl
-              << "Examples:" << std::endl
-              << std::endl
-              << "    td_rc -p my::ns -i abc.gif xyz.jpeg def.txt -i custom_var.git -v CUST_VAR -n cust::ns -d out -o rc" << std::endl
-              << "    td_rc -n abc -i abc.gif -v abc_val -o out/abc -n xyz -i xyz.jpeg -v xyz_val -o out/xyz.jpeg" << std::endl;
+    std::cout <<
+        "Usage: \n\n"
+        "    [-d] - output directory (default to current working directory)\n"
+        "    [-id] - input directory\n"
+        "    [-hd] - output headers directory\n"
+        "    [-cd] - output cpp directory\n"
+        "    [-dn] - default namespace (defaults to no namespace)\n"
+        "    *(\n"
+        "        *(\n"
+        "            -i - input file(s), allows multiple sequence of input files (multiple arguments)\n"
+        "            [-v] - optional variable name (defaults to uppercase filename without extension)\n"
+        "            [-n] - optional namespace (defaults to '-p' namespace)\n"
+        "        )\n"
+        "        any(\n"
+        "            (\n"
+        "                -o - output file prefix (relative to output directory (see '-d')\n"
+        "            )\n"
+        "            (\n"
+        "                -h - output header file\n"
+        "                -c - output cpp file\n"
+        "            )\n"
+        "        )\n"
+        "    )\n\n"
+        "Examples:\n\n"
+        "    td_rc -p my::ns -i abc.gif xyz.jpeg def.txt -i custom_var.git -v CUST_VAR -n cust::ns -d out -o rc\n"
+        "    td_rc -n abc -i abc.gif -v abc_val -o out/abc -n xyz -i xyz.jpeg -v xyz_val -o out/xyz.jpeg\n\n";
 }
