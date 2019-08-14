@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 project(td)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Werror")
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-error=unused-variable")
 add_subdirectory(ext/Catch2 EXCLUDE_FROM_ALL)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/ext/Catch2/contrib")

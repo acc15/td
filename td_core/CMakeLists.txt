@@ -13,8 +13,8 @@ add_library(td_core STATIC
         include/td/engine/event.h include/td/engine/engine.h include/td/engine/object.h src/td/engine/engine.cpp include/td/engine/fwd.h src/td/engine/event.cpp src/td/engine/object.cpp)
 
 target_link_libraries(td_core PNG::PNG GLEW::GLEW Eigen3::Eigen)
-include_directories(td_core include)
+target_include_directories(td_core PUBLIC include)
 
-add_executable(td_core_test test/main.cpp test/td/buffer/buffer.cpp test/color.cpp test/td/gl/vbo_layout.cpp)
+add_executable(td_core_test test/main.cpp test/td/buffer/buffer.cpp test/color.cpp test/td/gl/vbo_layout.cpp test/td/engine/event.cpp)
 target_link_libraries(td_core_test Catch2::Catch2 td_core)
 catch_discover_tests(td_core_test)
