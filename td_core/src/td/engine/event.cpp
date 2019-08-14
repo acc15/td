@@ -12,23 +12,62 @@ event_type render_event::type() const {
     return RENDER;
 }
 
-void event_emitter::emit(const td::event& e) {
-    std::vector<event_listener>& list = _listeners[e.type()];
-    for (event_listener& l: list) {
-        (l.owner->*l.handler)(e);
+void listener_list::emit(const event& e) {
+    for (const auto & _listener : _listeners) {
+        (_listener.second.owner->*_listener.second.handler)(e);
     }
 }
 
-bool compare_event_listener(const event_listener& l1, const event_listener& l2) {
-    return l1.priority < l2.priority;
+listener_list::iterator listener_list::listen(engine_object* owner, event_handler handler, size_t priority) {
+    listener_value l = { owner, handler };
+    auto ret = _listeners.insert(std::make_pair(priority, l));
+    _object.insert(std::make_pair(owner, ret));
+    return ret;
 }
 
-void event_emitter::listen(event_type type, engine_object* owner, event_handler handler, size_t priority) {
-    event_listener l = {owner, handler, priority};
+void listener_list::mute(const listener_list::iterator& iter) {
+    engine_object* owner = iter->second.owner;
+    auto iters = _object.equal_range(owner);
+    for (; iters.first != iters.second; ++iters.first) {
+        if (iters.first->second == iter) {
+            _object.erase(iters.first);
+            break;
+        }
+    }
+    _listeners.erase(iter);
+}
 
-    std::vector<event_listener>& list = _listeners[type];
-    const auto it = std::upper_bound(list.begin(), list.end(), l, &compare_event_listener);
-    list.insert(it, l);
+void listener_list::mute(engine_object* owner) {
+    auto iters = _object.equal_range(owner);
+    for (; iters.first != iters.second; ++iters.first) {
+        _listeners.erase(iters.first->second);
+    }
+    _object.erase(owner);
+}
+
+void event_emitter::emit(const td::event& e) {
+    if (_listeners.find(e.type()) == _listeners.end()) {
+        return;
+    }
+    _listeners[e.type()].emit(e);
+}
+
+event_emitter::listener_tag event_emitter::listen(event_type type, engine_object* owner, event_handler handler, size_t priority) {
+    auto iter = _listeners[type].listen(owner, handler, priority);
+    return std::make_pair(type, iter);
+}
+
+void event_emitter::mute(const listener_tag& tag) {
+    if (_listeners.find(tag.first) == _listeners.end()) {
+        return;
+    }
+    _listeners[tag.first].mute(tag.second);
+}
+
+void event_emitter::mute(engine_object* owner) {
+    for (auto l: _listeners) {
+        l.second.mute(owner);
+    }
 }
 
 }

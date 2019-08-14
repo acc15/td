@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+//#include <vector>
 #include <map>
 
 #include <cstddef>
@@ -33,24 +33,51 @@ public:
     event_type type() const override;
 };
 
-typedef void (engine_object::*event_handler)(const event& e);
+template <typename O, typename E>
+using generic_event_handler = void (O::*)(const E&);
 
-struct event_listener {
+typedef generic_event_handler<engine_object, event> event_handler;
+
+struct listener_value {
     engine_object* owner;
     event_handler handler;
-    size_t priority;
+};
+
+template <typename O, typename E>
+inline event_handler eh(generic_event_handler<O, E> h) {
+    return reinterpret_cast<event_handler>(h);
+}
+
+class listener_list {
+public:
+    typedef std::multimap<size_t, listener_value> listener_map;
+    typedef listener_map::iterator iterator;
+
+    void emit(const event& e);
+    iterator listen(engine_object* owner, event_handler handler, size_t priority);
+    void mute(const iterator& iter);
+    void mute(engine_object* owner);
+
+private:
+    typedef std::multimap<engine_object*, iterator> object_map;
+
+    listener_map _listeners;
+    object_map _object;
+
 };
 
 
 class event_emitter {
 public:
+    typedef std::pair<event_type, listener_list::iterator> listener_tag;
+
     void emit(const event& e);
-    void listen(event_type type, engine_object* owner, event_handler handler, size_t priority = 0);
-    //void mute(event_type type, event_handler handler);
-    //void mute_by_owner(engine_object* owner);
+    listener_tag listen(event_type type, engine_object* owner, event_handler handler, size_t priority = 0);
+    void mute(const listener_tag& tag);
+    void mute(engine_object* owner);
 
 private:
-    std::map<event_type, std::vector<event_listener>> _listeners;
+    std::map<event_type, listener_list> _listeners;
 
 };
 

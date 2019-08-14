@@ -15,6 +15,6 @@ add_library(td_core STATIC
 target_link_libraries(td_core PNG::PNG GLEW::GLEW Eigen3::Eigen)
 target_include_directories(td_core PUBLIC include)
 
-add_executable(td_core_test test/main.cpp test/td/buffer/buffer.cpp test/color.cpp test/td/gl/vbo_layout.cpp test/td/engine/event.cpp)
+add_executable(td_core_test test/main.cpp test/td/buffer/buffer.cpp test/td/gl/vbo_layout.cpp test/td/engine/event.cpp)
 target_link_libraries(td_core_test Catch2::Catch2 td_core)
 catch_discover_tests(td_core_test)
