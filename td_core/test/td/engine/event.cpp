@@ -58,6 +58,31 @@ TEST_CASE("listener_list") {
 
     }
 
+    SECTION("attach called after first listener added") {
+        size_t attached_called = 0;
+        l.attach([&attached_called](const td::listener_list& list) -> void { ++attached_called; });
+
+        l.listen(&handler, td::eh(&test_handler::render), 0);
+        l.mute(&handler);
+        l.listen(&handler, td::eh(&test_handler::render), 0);
+
+        REQUIRE(attached_called == 2);
+    }
+
+    SECTION("detach called after last listener removed") {
+        size_t detach_called = 0;
+        l.detach([&detach_called](const td::listener_list& list) -> void { ++detach_called; });
+
+        l.listen(&handler, td::eh(&test_handler::render), 0);
+        l.mute(&handler);
+        l.listen(&handler, td::eh(&test_handler::render), 0);
+        l.mute(&handler);
+        l.listen(&handler, td::eh(&test_handler::render), 0);
+
+        REQUIRE(detach_called == 2);
+    }
+
+
 }
 
 TEST_CASE("event_emitter") {
