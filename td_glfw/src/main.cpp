@@ -4,14 +4,33 @@
 #include <iostream>
 
 #include <td/core/buffer.h>
+#include <td/engine/engine.h>
 
 #include "res.hpp"
 
-void init_game() {
+class glfw_engine: public td::engine {
+public:
+    glfw_engine(GLFWwindow* window): _window(window) {
+    }
+
+    GLFWwindow* window() const {
+        return _window;
+    }
+
+private:
+    GLFWwindow* _window;
+};
+
+
+void init_game(td::engine& e) {
+
+
+    // e.is_key_pressed(1);
+
 
 }
 
-void draw_frame() {
+void draw_frame(td::engine& e) {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -33,9 +52,11 @@ int run_glfw_window(GLFWwindow* window) {
         return -1;
     }
 
+    glfw_engine e(window);
+
     try {
 
-        init_game();
+        init_game(e);
 
         while (!glfwWindowShouldClose(window)) {
 
@@ -43,7 +64,7 @@ int run_glfw_window(GLFWwindow* window) {
             glfwGetFramebufferSize(window, &width, &height);
             glViewport(0, 0, width, height);
 
-            draw_frame();
+            draw_frame(e);
 
             glfwSwapBuffers(window);
             glfwPollEvents();

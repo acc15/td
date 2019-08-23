@@ -15,7 +15,14 @@ event_type render_event::type() const {
 void listener_list::noop(const listener_list& l) {
 }
 
-listener_list::listener_list(): _attach(&noop), _detach(&noop) {};
+listener_list::listener_list(): _attach(&noop), _detach(&noop) {
+}
+
+listener_list::~listener_list() {
+    if (!_listeners.empty()) {
+        _detach(*this);
+    }
+}
 
 void listener_list::emit(const event& e) {
     for (const auto & _listener : _listeners) {
@@ -60,42 +67,12 @@ void listener_list::mute(engine_object* owner) {
     }
 }
 
-void listener_list::attach(const listener_list::callback_fn& fn) {
+void listener_list::on_attach(const listener_list::callback_fn& fn) {
     _attach = fn;
 }
 
-void listener_list::detach(const listener_list::callback_fn& fn) {
+void listener_list::on_detach(const listener_list::callback_fn& fn) {
     _detach = fn;
-}
-
-
-void event_emitter::emit(const td::event& e) {
-    if (_listeners.find(e.type()) == _listeners.end()) {
-        return;
-    }
-    _listeners[e.type()].emit(e);
-}
-
-event_emitter::listener_tag event_emitter::listen(event_type type, engine_object* owner, event_handler handler, size_t priority) {
-    auto iter = _listeners[type].listen(owner, handler, priority);
-    return std::make_pair(type, iter);
-}
-
-void event_emitter::mute(const listener_tag& tag) {
-    if (_listeners.find(tag.first) == _listeners.end()) {
-        return;
-    }
-    _listeners[tag.first].mute(tag.second);
-}
-
-void event_emitter::mute(engine_object* owner) {
-    for (auto l: _listeners) {
-        l.second.mute(owner);
-    }
-}
-
-listener_list& event_emitter::listeners(event_type type) {
-    return _listeners[type];
 }
 
 }

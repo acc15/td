@@ -57,14 +57,15 @@ public:
     typedef listener_map::iterator iterator;
 
     listener_list();
+    ~listener_list();
 
     void emit(const event& e);
     iterator listen(engine_object* owner, event_handler handler, size_t priority);
     void mute(const iterator& iter);
     void mute(engine_object* owner);
 
-    void attach(const callback_fn& fn);
-    void detach(const callback_fn& fn);
+    void on_attach(const callback_fn& fn);
+    void on_detach(const callback_fn& fn);
 
     static void noop(const listener_list& list);
 
@@ -78,24 +79,6 @@ private:
     object_map _object;
 
 };
-
-
-class event_emitter {
-public:
-    typedef std::pair<event_type, listener_list::iterator> listener_tag;
-
-    void emit(const event& e);
-    listener_tag listen(event_type type, engine_object* owner, event_handler handler, size_t priority = 0);
-    void mute(const listener_tag& tag);
-    void mute(engine_object* owner);
-    listener_list& listeners(event_type type);
-
-private:
-    std::map<event_type, listener_list> _listeners;
-
-};
-
-
 
 }
 
