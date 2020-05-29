@@ -16,7 +16,7 @@ add_library(td_core STATIC
     include/td/engine/fwd.h src/td/engine/event.cpp
 )
 
-target_link_libraries(td_core OpenGL::GL PNG::PNG GLEW::GLEW Eigen3::Eigen)
+target_link_libraries(td_core OpenGL::GL OpenGL::GLU PNG::PNG GLEW::GLEW Eigen3::Eigen fmt::fmt )
 target_include_directories(td_core PUBLIC include)
 
 add_executable(td_core_test

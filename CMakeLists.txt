@@ -2,17 +2,22 @@ cmake_minimum_required(VERSION 3.13)
 project(td)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-error=unused-variable -Wno-error=unused-but-set-variable")
-add_subdirectory(ext/Catch2 EXCLUDE_FROM_ALL)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-error=unused-variable -Wno-error=unused-but-set-variable")
 
+# Catch
+add_subdirectory(ext/Catch2 EXCLUDE_FROM_ALL)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/ext/Catch2/contrib")
 include(CTest)
 include(Catch)
 
+# GLFW
 option(GLFW_BUILD_EXAMPLES OFF)
 option(GLFW_BUILD_TESTS OFF)
 option(GLFW_BUILD_DOCS OFF)
 add_subdirectory(ext/glfw EXCLUDE_FROM_ALL)
+
+# {fmt} libr
+add_subdirectory(ext/fmt EXCLUDE_FROM_ALL)
 
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)

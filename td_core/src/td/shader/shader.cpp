@@ -1,9 +1,10 @@
 #include <stdexcept>
 #include <string>
-#include <sstream>
+
+#include <fmt/format.h>
 
 #include <td/shader/shader.h>
-#include <td/core/fmt.h>
+
 
 namespace td {
 
@@ -21,9 +22,9 @@ GLuint shader::id() {
 
     GLuint id = glCreateShader(shader_type_gl(_type));
     if (id == 0) {
-        throw std::runtime_error(fmt_str(fmts()
-                                         << "Unable to create shader of type "
-                                         << static_cast<int>(_type) << ". OpenGL error: " << std::hex << glGetError()));
+        throw std::runtime_error(fmt::format("Unable to create shader of type {}. OpenGL error: {}",
+            shader_type_str(_type), gluErrorString(glGetError()))
+        );
     }
     glShaderSource(id, 1, &_src, nullptr);
     glCompileShader(id);

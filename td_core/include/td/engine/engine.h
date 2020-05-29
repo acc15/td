@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <string>
 
 #include <td/engine/fwd.h>
 #include <td/engine/event.h>

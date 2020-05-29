@@ -12,6 +12,7 @@ class program {
 public:
 
     program();
+    ~program();
 
     program(program&& mv) noexcept;
     program& operator=(program&& mv) noexcept;
