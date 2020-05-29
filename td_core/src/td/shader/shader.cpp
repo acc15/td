@@ -7,7 +7,7 @@
 
 namespace td {
 
-shader::shader(GLenum type, const char *src): _id(0), _src(src), _type(type) {
+shader::shader(shader_type type, const char *src): _id(0), _src(src), _type(type) {
 }
 
 shader::~shader() {
@@ -19,11 +19,11 @@ GLuint shader::id() {
         return _id;
     }
 
-    GLuint id = glCreateShader(_type);
+    GLuint id = glCreateShader(shader_type_gl(_type));
     if (id == 0) {
         throw std::runtime_error(fmt_str(fmts()
                                          << "Unable to create shader of type "
-                                         << _type << ". OpenGL error: " << std::hex << glGetError()));
+                                         << static_cast<int>(_type) << ". OpenGL error: " << std::hex << glGetError()));
     }
     glShaderSource(id, 1, &_src, nullptr);
     glCompileShader(id);
@@ -56,7 +56,7 @@ const char *shader::src() const {
     return _src;
 }
 
-GLenum shader::type() const {
+shader_type shader::type() const {
     return _type;
 }
 

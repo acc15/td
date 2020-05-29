@@ -1,3 +1,6 @@
+#include <string>
+#include <stdexcept>
+
 #include <td/shader/program.h>
 
 namespace td {
@@ -5,8 +8,13 @@ namespace td {
 program::program() : _id(0) {
 }
 
+
 program::program(program&& mv) noexcept: _id(mv._id), _internals(std::move(mv._internals)), _externals(std::move(mv._externals)) {
     mv._id = 0;
+}
+
+program::~program() {
+    rm();
 }
 
 program& program::operator=(program&& mv) noexcept {
@@ -17,26 +25,35 @@ program& program::operator=(program&& mv) noexcept {
     return *this;
 }
 
-program&& program::add(shader&& mv) {
+
+program& program::add(shader&& mv) {
     _internals.push_back(mv);
-    return std::move(*this);
+    return *this;
 }
 
-program&& program::add(shader& cp) {
+program& program::add(shader& cp) {
     _externals.push_back(std::ref(cp));
-    return std::move(*this);
+    return *this;
 }
 
-program&& program::add(GLenum type, const char* src) {
-    return add(std::move(shader(type, src)));
+program& program::add(shader_type type, const char* src) {
+    return add(shader(type, src));
 }
 
-program&& program::vertex(const char* src) {
-    return add(GL_VERTEX_SHADER, src);
+program& program::vertex(const char* src) {
+    return add(shader_type::VERTEX, src);
 }
 
-program&& program::fragment(const char* src) {
-    return add(GL_FRAGMENT_SHADER, src);
+program& program::fragment(const char* src) {
+    return add(shader_type::FRAGMENT, src);
+}
+
+const std::vector<std::reference_wrapper<shader>>& program::externals() const {
+    return _externals;
+}
+
+const std::vector<shader>& program::internals() const {
+    return _internals;
 }
 
 GLuint program::id() {

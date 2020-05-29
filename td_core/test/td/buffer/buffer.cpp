@@ -2,7 +2,7 @@
 #include <td/core/buffer.h>
 
 TEST_CASE("static_buffer") {
-    SECTION("move constructor") {
+    SECTION("copy assignment") {
         size_t data = 123;
 
         td::static_buffer buf1;
@@ -12,7 +12,7 @@ TEST_CASE("static_buffer") {
         buf2 = buf1;
 
         REQUIRE( buf1.data() == &data );
-        REQUIRE( buf2.data() == &data);
+        REQUIRE( buf2.data() == &data );
         REQUIRE( buf2.size() == buf1.size() );
     }
 }

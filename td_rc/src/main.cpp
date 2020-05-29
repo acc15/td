@@ -1,11 +1,7 @@
-
-
 #include "cmdline.h"
 #include "targets.h"
 #include "gen.h"
 
-#include <iostream>
-#include <iomanip>
 
 int main(int argc, const char* argv[]) {
 
