@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#include <td/core/buffer.h>
+#include <td/core/buf.h>
 #include <td/engine/engine.h>
 
 #include "res.hpp"
@@ -68,6 +68,7 @@ int run_glfw_window(GLFWwindow* window) {
 
             glfwSwapBuffers(window);
             glfwPollEvents();
+
         }
 
     } catch (const std::exception& e) {

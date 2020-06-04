@@ -8,7 +8,7 @@ add_library(td_core STATIC
     include/td/gl/gl_type.h
     include/td/gl/buffer_object.h
     include/td/gl/vbo_layout.h src/td/gl/vbo_layout.cpp
-    include/td/core/buffer.h
+    include/td/core/buf.h
     include/td/core/color.h
     include/td/engine/event.h
     include/td/engine/engine.h src/td/engine/engine.cpp
@@ -21,7 +21,8 @@ target_include_directories(td_core PUBLIC include)
 
 add_executable(td_core_test
     test/main.cpp
-    test/td/buffer/buffer.cpp
+    test/td/buf/buf.cpp
+    test/td/buf/static_buf.cpp
     test/td/gl/vbo_layout.cpp
     test/td/engine/event.cpp
     test/td/engine/engine.cpp

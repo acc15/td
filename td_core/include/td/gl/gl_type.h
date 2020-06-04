@@ -16,14 +16,16 @@ template <typename T>
 struct t2gl {
     // static_assert(false, "unknown OpenGL type");
 };
-template <> struct t2gl<GLdouble>: public gl_type_def<GLfloat, GL_DOUBLE> {};
 template <> struct t2gl<GLfloat>: public gl_type_def<GLfloat, GL_FLOAT> {};
-template <> struct t2gl<GLuint>: public gl_type_def<GLfloat, GL_UNSIGNED_INT> {};
-template <> struct t2gl<GLushort>: public gl_type_def<GLfloat, GL_UNSIGNED_SHORT> {};
-template <> struct t2gl<GLubyte>: public gl_type_def<GLfloat, GL_UNSIGNED_BYTE> {};
-template <> struct t2gl<GLint>: public gl_type_def<GLfloat, GL_INT> {};
-template <> struct t2gl<GLshort>: public gl_type_def<GLfloat, GL_SHORT> {};
-template <> struct t2gl<GLbyte>: public gl_type_def<GLfloat, GL_BYTE> {};
+template <> struct t2gl<GLhalf>: public gl_type_def<GLhalf, GL_HALF_FLOAT> {};
+template <> struct t2gl<GLdouble>: public gl_type_def<GLdouble, GL_DOUBLE> {};
+template <> struct t2gl<GLbyte>: public gl_type_def<GLbyte, GL_BYTE> {};
+template <> struct t2gl<GLubyte>: public gl_type_def<GLubyte, GL_UNSIGNED_BYTE> {};
+template <> struct t2gl<GLshort>: public gl_type_def<GLshort, GL_SHORT> {};
+// template <> struct t2gl<GLushort>: public gl_type_def<GLushort, GL_UNSIGNED_SHORT> {};
+template <> struct t2gl<GLint>: public gl_type_def<GLint, GL_INT> {};
+template <> struct t2gl<GLuint>: public gl_type_def<GLuint, GL_UNSIGNED_INT> {};
+// template <> struct t2gl<GLfixed>: public gl_type_def<GLfixed, GL_FIXED> {};
 
 template <GLenum type> struct gl2t {};
 template <> struct gl2t<GL_FLOAT>: public gl_type_def<GLfloat, GL_FLOAT> {};
