@@ -27,6 +27,7 @@ add_executable(td_core_test
     test/td/engine/event.cpp
     test/td/engine/engine.cpp
     test/td/shader/program.cpp
+    test/td/event/listener.cpp
 )
 
 target_link_libraries(td_core_test Catch2::Catch2 td_core)
