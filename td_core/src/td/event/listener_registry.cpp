@@ -40,7 +40,7 @@ listener_registry& listener_registry::instance() {
     return i;
 }
 
-listener_tag listener_registry::link(emitter* e, listener* l, event_type t, listener_handler<listener, event> h, size_t p) {
+listener_tag listener_registry::link(emitter* e, listener* l, event_type t, const handler_fn& h, size_t p) {
 
     priority_map& p_map = _e[e][t];
     if (p_map.empty()) {
@@ -64,7 +64,7 @@ void listener_registry::emit(emitter* e, const event& ev) {
         return;
     }
     for (const auto& p_entry: et_iter->second) {
-        (p_entry.second.first->*p_entry.second.second)(ev);
+        p_entry.second.second(ev);
     }
 }
 

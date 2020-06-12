@@ -1,21 +1,32 @@
 #pragma once
 
 #include "emitter.h"
+#include "../util/fn_cast.h"
 
 namespace td {
 
 class listener {
+private:
+
+    template<typename E>
+    std::pair<event_type, listener_registry::handler_fn> to_handler(const std::function<void(const E&)>& fn) {
+        event_type t = E::TYPE;
+        return std::make_pair(t, [fn](const td::event& e) -> void { fn(reinterpret_cast<const E&>(e)); });
+    }
+
 public:
 
     virtual ~listener();
 
-    template <typename L, typename E>
-    listener_tag listen(emitter* emitter, listener_handler<L, E> handler, size_t priority = 0) {
+    template <typename F>
+    listener_tag listen(emitter* emitter, const F& handler, size_t priority = 0) {
+        auto fn = fn_cast<listener, F>::to_fn(this, handler);
+        std::pair<event_type,listener_registry::handler_fn> h = to_handler(fn);
         return listener_registry::instance().link(
                 emitter,
                 this,
-                E::TYPE,
-                reinterpret_cast<listener_handler<listener, event>>(handler),
+                h.first,
+                h.second,
                 priority);
     }
 

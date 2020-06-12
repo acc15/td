@@ -9,14 +9,12 @@
 
 namespace td {
 
-template <typename L, typename E>
-using listener_handler = void (L::*)(const E& event);
-
 class listener;
 class emitter;
 
 class listener_registry {
 public:
+    typedef std::function<void(const event&)> handler_fn;
     typedef std::function<void(emitter*, event_type, bool)> activation_fn;
 
 private:
@@ -29,7 +27,7 @@ private:
         }
     };
 
-    typedef std::pair<listener*, listener_handler<listener, event>> listener_pair;
+    typedef std::pair<listener*, handler_fn> listener_pair;
     typedef std::multimap<size_t, listener_pair, std::greater<> > priority_map;
     typedef std::unordered_map<event_type, priority_map> event_type_map;
     typedef std::unordered_map<emitter*, event_type_map> emitter_map;
@@ -78,7 +76,7 @@ public:
      * @param p listener priority
      * @return listener tag - by using this tag listener can be deleted later (by using mute(tag))
      */
-    listener_tag link(emitter* e, listener* l, event_type t, listener_handler<listener, event> h, size_t p);
+    listener_tag link(emitter* e, listener* l, event_type t, const handler_fn& h, size_t p);
 
     /**
      * Emits single event from emitter

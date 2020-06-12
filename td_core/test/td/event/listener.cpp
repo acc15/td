@@ -1,9 +1,11 @@
 #include <catch2/catch.hpp>
 
-#include <tuple>
+#include <iostream>
 
 #include <td/event/listener.h>
 #include <td/event/emitter.h>
+
+#include <td/util/fn_cast.h>
 
 using td::emitter;
 using td::listener;
@@ -63,6 +65,16 @@ TEST_CASE("listener") {
 
         REQUIRE(l1.render_calls == 1);
         REQUIRE(l1.process_calls == 0);
+
+    }
+
+    SECTION("can listen using lambda") {
+
+        bool render_called = false;
+        l1.listen(&e1, [&render_called](const render_event& e) -> void { render_called = true; });
+        e1.emit(render_event());
+
+        REQUIRE(render_called);
 
     }
 
