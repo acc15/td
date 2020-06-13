@@ -17,6 +17,9 @@ public:
 
 void td_init() {
 
+    td::engine& e = td::engine::get();
+    e.title("td_pong");
+
     /*
     td::engine& e = td::engine::get();
     e.scene(new pong_scene());*/

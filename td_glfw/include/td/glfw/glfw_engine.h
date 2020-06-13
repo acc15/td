@@ -6,12 +6,14 @@
 
 namespace td {
 
-    class glfw_engine: public engine {
-    public:
-        glfw_engine(GLFWwindow* window);
+class glfw_engine: public engine {
+public:
+    glfw_engine(GLFWwindow* window);
 
-    private:
-        GLFWwindow* _window;
-    };
+private:
+    GLFWwindow* _window;
+    friend td::engine;
+};
+
 
 }

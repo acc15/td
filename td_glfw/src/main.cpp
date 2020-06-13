@@ -62,6 +62,7 @@ int run_glfw_window(GLFWwindow* window) {
 
         td_init();
 
+        glfwShowWindow(window);
         while (!glfwWindowShouldClose(window)) {
 
             int width, height;
@@ -89,7 +90,8 @@ int run_glfw_window(GLFWwindow* window) {
 
 
 int run_glfw() {
-    GLFWwindow* window = glfwCreateWindow(640, 480, "Simple example", nullptr, nullptr);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    GLFWwindow* window = glfwCreateWindow(640, 480, "td", nullptr, nullptr);
     if (!window) {
         return -1;
     }
