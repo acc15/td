@@ -1,6 +1,5 @@
 project(td_core)
 
-
 add_library(td_core STATIC
     include/td/core/img.h src/td/core/img.cpp
     include/td/shader/shader.h src/td/shader/shader.cpp
@@ -10,10 +9,6 @@ add_library(td_core STATIC
     include/td/gl/vbo_layout.h src/td/gl/vbo_layout.cpp
     include/td/core/buf.h
     include/td/core/color.h
-    include/td/engine/event.h
-    include/td/engine/engine.h src/td/engine/engine.cpp
-    include/td/engine/object.h src/td/engine/object.cpp
-    include/td/engine/fwd.h src/td/engine/event.cpp
     include/td/event/event.h
     include/td/event/listener_registry.h src/td/event/listener_registry.cpp
     include/td/event/listener.h src/td/event/listener.cpp
@@ -29,8 +24,6 @@ add_executable(td_core_test
     test/td/buf/buf.cpp
     test/td/buf/static_buf.cpp
     test/td/gl/vbo_layout.cpp
-    test/td/engine/event.cpp
-    test/td/engine/engine.cpp
     test/td/shader/program.cpp
     test/td/event/listener.cpp
 )

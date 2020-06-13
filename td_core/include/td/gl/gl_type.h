@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdexcept>
-
+#include <fmt/format.h>
 #include <td/gl/gl.h>
 
 namespace td {
@@ -52,7 +52,7 @@ constexpr inline size_t gl_sizeof(GLenum type) {
         case GL_FIXED: return sizeof(GLfixed);
         case GL_HALF_FLOAT: return sizeof(GLhalf);
         default:
-            throw std::invalid_argument("Unknown OpenGL type constant " + std::to_string(type));
+            throw std::invalid_argument(fmt::format("Unknown OpenGL type constant {}", type));
     }
 }
 

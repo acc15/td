@@ -1,15 +1,7 @@
 #include <memory>
-
-//
-// Created by acc15 on 28.03.19.
-//
-
 #include <td/core/img.h>
-
 #include <stdexcept>
-
 #include <png.h>
-#include <bits/unique_ptr.h>
 
 namespace td {
 

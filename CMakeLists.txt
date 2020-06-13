@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.13)
 project(td)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-error=unused-variable -Wno-error=unused-but-set-variable")
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+    message(STATUS "GCC detected, adding compile flags")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-error=unused-variable -Wno-error=unused-but-set-variable")
+endif(CMAKE_COMPILER_IS_GNUCXX)
 
 # Catch
 add_subdirectory(ext/Catch2 EXCLUDE_FROM_ALL)
@@ -20,7 +24,10 @@ add_subdirectory(ext/glfw EXCLUDE_FROM_ALL)
 add_subdirectory(ext/fmt EXCLUDE_FROM_ALL)
 
 find_package(OpenGL REQUIRED)
+
+# set(GLEW_USE_STATIC_LIBS TRUE)
 find_package(GLEW REQUIRED)
+
 find_package(PNG REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
