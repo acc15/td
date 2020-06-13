@@ -16,7 +16,7 @@ option(GLFW_BUILD_TESTS OFF)
 option(GLFW_BUILD_DOCS OFF)
 add_subdirectory(ext/glfw EXCLUDE_FROM_ALL)
 
-# {fmt} libr
+# {fmt}
 add_subdirectory(ext/fmt EXCLUDE_FROM_ALL)
 
 find_package(OpenGL REQUIRED)
