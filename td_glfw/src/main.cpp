@@ -3,8 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#include <td/core/buf.h>
-#include <td/engine/engine.h>
+#include <td/glfw/glfw_engine.h>
 
 extern void td_init();
 
@@ -54,13 +53,12 @@ int run_glfw_window(GLFWwindow* window) {
         return -1;
     }
 
-    // TODO implement multi-event activation
-    glfwSetKeyCallback(window, key_callback);
-
-    // td::engine::get().activation((td::event_type::KEY_DOWN, td::event_type::KEY_UP, td::event_type::KEY_REPEAT), [window](t, b) -> {
-    // )
-
     try {
+
+        td::glfw_engine e(window);
+        e.activation({ td::event_type::KEY_DOWN, td::event_type::KEY_UP, td::event_type::KEY_REPEAT }, [window](bool active) -> void {
+            glfwSetKeyCallback(window, active ? key_callback : nullptr);
+        });
 
         td_init();
 

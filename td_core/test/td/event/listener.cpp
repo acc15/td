@@ -1,11 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include <iostream>
-
 #include <td/event/listener.h>
-#include <td/event/emitter.h>
-
-#include <td/util/fn_cast.h>
 
 using td::emitter;
 using td::listener;
@@ -59,7 +54,7 @@ TEST_CASE("listener") {
 
     SECTION("can listen for events") {
 
-        l1.listen(&e1, &test_listener::render);
+        l1.listen(e1, &test_listener::render);
         e1.emit(render_event());
         e1.emit(process_event());
 
@@ -71,7 +66,7 @@ TEST_CASE("listener") {
     SECTION("can listen using lambda") {
 
         bool render_called = false;
-        l1.listen(&e1, [&render_called](const render_event& e) -> void { render_called = true; });
+        l1.listen(e1, [&render_called](const render_event& e) -> void { render_called = true; });
         e1.emit(render_event());
 
         REQUIRE(render_called);
@@ -84,9 +79,9 @@ TEST_CASE("listener") {
 
         test_order_listener o1(order_vec), o2(order_vec), o3(order_vec);
 
-        o1.listen(&e1, &test_order_listener::render, 1000);
-        o2.listen(&e1, &test_order_listener::render);
-        o3.listen(&e1, &test_order_listener::render, 2000);
+        o1.listen(e1, &test_order_listener::render, 1000);
+        o2.listen(e1, &test_order_listener::render);
+        o3.listen(e1, &test_order_listener::render, 2000);
 
         e1.emit(render_event());
 
@@ -95,8 +90,8 @@ TEST_CASE("listener") {
     }
 
     SECTION("can listen two times for same event") {
-        l1.listen(&e1, &test_listener::render);
-        l1.listen(&e1, &test_listener::render);
+        l1.listen(e1, &test_listener::render);
+        l1.listen(e1, &test_listener::render);
 
         e1.emit(render_event());
 
@@ -106,8 +101,8 @@ TEST_CASE("listener") {
 
     SECTION("can listen from multiple emitters") {
 
-        l1.listen(&e1, &test_listener::render);
-        l1.listen(&e2, &test_listener::process);
+        l1.listen(e1, &test_listener::render);
+        l1.listen(e2, &test_listener::process);
 
         e1.emit(render_event());
         e2.emit(process_event());
@@ -123,7 +118,7 @@ TEST_CASE("listener") {
         {
 
             listener tmp_l;
-            tmp_l.listen(&e1, &test_listener::render);
+            tmp_l.listen(e1, &test_listener::render);
 
         }
 
@@ -135,8 +130,8 @@ TEST_CASE("listener") {
         {
 
             emitter e;
-            l1.listen(&e, &test_listener::render);
-            l2.listen(&e, &test_listener::process);
+            l1.listen(e, &test_listener::render);
+            l2.listen(e, &test_listener::process);
 
             REQUIRE( l1.emitters() == std::unordered_set<emitter*>({&e}) );
             REQUIRE( l2.emitters() == std::unordered_set<emitter*>({&e}) );
@@ -150,15 +145,15 @@ TEST_CASE("listener") {
 
     SECTION("mute by emitter must correctly unlink listener") {
 
-        l1.listen(&e1, &test_listener::render);
-        l1.listen(&e2, &test_listener::render);
-        l2.listen(&e1, &test_listener::render);
-        l2.listen(&e2, &test_listener::render);
+        l1.listen(e1, &test_listener::render);
+        l1.listen(e2, &test_listener::render);
+        l2.listen(e1, &test_listener::render);
+        l2.listen(e2, &test_listener::render);
 
         REQUIRE(l1.emitters() == std::unordered_set<emitter*>({ &e1, &e2 }));
         REQUIRE(l2.emitters() == std::unordered_set<emitter*>({ &e1, &e2 }));
 
-        l1.mute(&e1);
+        l1.mute(e1);
 
         REQUIRE(l1.emitters() == std::unordered_set<emitter*>({ &e2 }));
         REQUIRE(l2.emitters() == std::unordered_set<emitter*>({ &e1, &e2 }));
@@ -173,10 +168,10 @@ TEST_CASE("listener") {
 
     SECTION("listener.mute must remove all listener references") {
 
-        l1.listen(&e1, &test_listener::render);
-        l1.listen(&e1, &test_listener::process);
-        l1.listen(&e2, &test_listener::process);
-        l2.listen(&e1, &test_listener::render);
+        l1.listen(e1, &test_listener::render);
+        l1.listen(e1, &test_listener::process);
+        l1.listen(e2, &test_listener::process);
+        l2.listen(e1, &test_listener::render);
 
         l1.mute();
 
@@ -191,8 +186,8 @@ TEST_CASE("listener") {
 
     SECTION("listeners by event_type correctly returned") {
 
-        l1.listen(&e1, &test_listener::render);
-        l1.listen(&e2, &test_listener::process);
+        l1.listen(e1, &test_listener::render);
+        l1.listen(e2, &test_listener::process);
 
         REQUIRE( e1.listeners(event_type::RENDER) == std::unordered_set<listener*>({ &l1 }) );
         REQUIRE( e2.listeners(event_type::RENDER).empty() );
@@ -204,8 +199,8 @@ TEST_CASE("listener") {
 
     SECTION("must correctly mute listener by tag") {
 
-        const auto t1 = l1.listen(&e1, &test_listener::render);
-        l1.listen(&e2, &test_listener::process);
+        const auto t1 = l1.listen(e1, &test_listener::render);
+        l1.listen(e2, &test_listener::process);
 
         l1.mute(t1);
 
@@ -245,16 +240,16 @@ TEST_CASE("listener") {
             activation_calls.emplace_back(active);
         });
 
-        l1.listen(&e, &test_listener::process);
+        l1.listen(e, &test_listener::process);
         REQUIRE( activation_calls == std::vector<bool>({ true }) );
 
-        l2.listen(&e, &test_listener::process);
+        l2.listen(e, &test_listener::process);
         REQUIRE( activation_calls == std::vector<bool>({ true }) );
 
-        l2.mute(&e);
+        l2.mute(e);
         REQUIRE( activation_calls == std::vector<bool>({ true }) );
 
-        l1.mute(&e);
+        l1.mute(e);
         REQUIRE( activation_calls == std::vector<bool>({ true, false }) );
 
     }
@@ -268,10 +263,10 @@ TEST_CASE("listener") {
             activation_calls.emplace_back(active);
         });
 
-        auto t1 = l1.listen(&e, &test_listener::process);
+        auto t1 = l1.listen(e, &test_listener::process);
         REQUIRE(activation_calls == std::vector<bool>({ true }));
 
-        auto t2 = l1.listen(&e, &test_listener::render);
+        auto t2 = l1.listen(e, &test_listener::render);
         REQUIRE(activation_calls == std::vector<bool>({ true }));
 
         l1.mute(t1);
@@ -301,7 +296,7 @@ TEST_CASE("listener") {
             ++expected_counts[index];
 
             listener* l = &ls[index];
-            l->listen(&e, &test_listener::render);
+            l->listen(e, &test_listener::render);
 
         }
 

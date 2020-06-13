@@ -5,15 +5,13 @@
 namespace td {
 
 class engine : public emitter {
-
 public:
-    static engine& get() {
-        static engine instance;
-        return instance;
-    }
+    static engine& get();
+    engine();
+    virtual ~engine();
 
 private:
-    engine() = default;
+    static engine* _instance;
 
 };
 

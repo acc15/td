@@ -41,3 +41,7 @@ find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 add_subdirectory(td_rc)
 add_subdirectory(td_core)
 add_subdirectory(td_glfw)
+
+if (TD_BUILD_EXAMPLES)
+    add_subdirectory(examples/pong)
+endif()

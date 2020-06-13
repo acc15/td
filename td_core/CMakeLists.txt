@@ -14,7 +14,7 @@ add_library(td_core STATIC
     include/td/event/listener.h src/td/event/listener.cpp
     include/td/event/emitter.h src/td/event/emitter.cpp
     include/td/util/fn_cast.h
-    include/td/engine/engine.h)
+    include/td/engine/engine.h src/td/engine/engine.cpp)
 
 target_link_libraries(td_core OpenGL::GL OpenGL::GLU PNG::PNG GLEW::GLEW Eigen3::Eigen fmt::fmt )
 target_include_directories(td_core PUBLIC include)

@@ -1,5 +1,7 @@
 #include <td/event/listener_registry.h>
 
+#include <iostream>
+
 namespace td {
 
 bool listener_registry::erase_et_entry(emitter* e, event_type t, const event_type_map::iterator& et_iter, event_type_map& et_map) {

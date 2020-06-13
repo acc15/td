@@ -20,13 +20,6 @@ public:
 private:
     listener_registry() = default;
 
-    template <typename X, typename Y>
-    struct pair_hash {
-        size_t operator()(const std::pair<X, Y>& p) const {
-            return std::hash<X>{}(p.first) ^ std::hash<Y>{}(p.second);
-        }
-    };
-
     typedef std::pair<listener*, handler_fn> listener_pair;
     typedef std::multimap<size_t, listener_pair, std::greater<> > priority_map;
     typedef std::unordered_map<event_type, priority_map> event_type_map;

@@ -10,8 +10,8 @@ listener::~listener() {
  * Remove all handlers by emitter
  * @param e emitter
  */
-void listener::mute(emitter* e) {
-        listener_registry::get().unlink(this, e);
+void listener::mute(emitter& e) {
+        listener_registry::get().unlink(this, &e);
 }
 
 /**
