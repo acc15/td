@@ -6,7 +6,13 @@ set(CMAKE_CXX_STANDARD 17)
 if(CMAKE_COMPILER_IS_GNUCXX)
     message(STATUS "GCC detected, adding compile flags")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-error=unused-variable -Wno-error=unused-but-set-variable")
-endif(CMAKE_COMPILER_IS_GNUCXX)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    message(STATUS "MSVC detected, adding compile flags")
+    SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt.lib")
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall /WX")
+endif()
 
 # Catch
 add_subdirectory(ext/Catch2 EXCLUDE_FROM_ALL)

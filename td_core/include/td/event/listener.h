@@ -22,7 +22,7 @@ public:
     listener_tag listen(emitter* emitter, const F& handler, size_t priority = 0) {
         auto fn = fn_cast<listener, F>::to_fn(this, handler);
         std::pair<event_type,listener_registry::handler_fn> h = to_handler(fn);
-        return listener_registry::instance().link(
+        return listener_registry::get().link(
                 emitter,
                 this,
                 h.first,

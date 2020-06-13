@@ -54,7 +54,7 @@ TEST_CASE("listener") {
     emitter e2;
 
     SECTION("before tests registry must be empty") {
-        REQUIRE(listener_registry::instance().empty());
+        REQUIRE(listener_registry::get().empty());
     }
 
     SECTION("can listen for events") {
@@ -185,7 +185,7 @@ TEST_CASE("listener") {
         l2.mute();
 
         REQUIRE(l2.emitters().empty());
-        REQUIRE(listener_registry::instance().empty());
+        REQUIRE(listener_registry::get().empty());
 
     }
 
@@ -224,7 +224,7 @@ TEST_CASE("listener") {
         typedef std::tuple<emitter*, event_type, bool> act_args;
         std::vector<act_args> activation_calls;
 
-        listener_registry::instance().activation(&e1, event_type::PROCESS, [&activation_calls](emitter* e, event_type t, bool active) -> void {
+        listener_registry::get().activation(&e1, event_type::PROCESS, [&activation_calls](emitter* e, event_type t, bool active) -> void {
             activation_calls.emplace_back(e, t, active);
         });
 
@@ -285,12 +285,12 @@ TEST_CASE("listener") {
         }
 
         REQUIRE(expected_counts == actual_counts);
-        REQUIRE(listener_registry::instance().empty());
+        REQUIRE(listener_registry::get().empty());
 
     }
 
     SECTION("after tests registry must be empty") {
-        REQUIRE(listener_registry::instance().empty());
+        REQUIRE(listener_registry::get().empty());
     }
 
 

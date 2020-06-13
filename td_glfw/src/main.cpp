@@ -4,14 +4,37 @@
 #include <iostream>
 
 #include <td/core/buf.h>
+#include <td/engine/engine.h>
 
-
-void init_game() {
-}
+extern void td_init();
 
 void draw_frame() {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
+    td::engine::get().emit(td::render_event());
+}
+
+void process_frame() {
+    td::engine::get().emit(td::process_event());
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    switch (action) {
+        case GLFW_PRESS:
+            td::engine::get().emit(td::key_down_event(scancode));
+            break;
+
+        case GLFW_RELEASE:
+            td::engine::get().emit(td::key_up_event(scancode));
+            break;
+
+        case GLFW_REPEAT:
+            td::engine::get().emit(td::key_repeat_event(scancode));
+            break;
+
+        default:
+            break;
+    }
 }
 
 bool init_glew() {
@@ -31,9 +54,15 @@ int run_glfw_window(GLFWwindow* window) {
         return -1;
     }
 
+    // TODO implement multi-event activation
+    glfwSetKeyCallback(window, key_callback);
+
+    // td::engine::get().activation((td::event_type::KEY_DOWN, td::event_type::KEY_UP, td::event_type::KEY_REPEAT), [window](t, b) -> {
+    // )
+
     try {
 
-        init_game();
+        td_init();
 
         while (!glfwWindowShouldClose(window)) {
 
@@ -42,6 +71,7 @@ int run_glfw_window(GLFWwindow* window) {
             glViewport(0, 0, width, height);
 
             draw_frame();
+            process_frame();
 
             glfwSwapBuffers(window);
             glfwPollEvents();

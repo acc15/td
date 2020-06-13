@@ -35,7 +35,7 @@ void listener_registry::call_activation(emitter* e, event_type t, bool active) c
     act_iter->second(e, t, active);
 }
 
-listener_registry& listener_registry::instance() {
+listener_registry& listener_registry::get() {
     static listener_registry i;
     return i;
 }

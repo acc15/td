@@ -65,7 +65,7 @@ public:
         priority_map::iterator i;
     };
 
-    static listener_registry& instance();
+    static listener_registry& get();
 
     /**
      * Links emitter, listener together supplying event type and handling function
