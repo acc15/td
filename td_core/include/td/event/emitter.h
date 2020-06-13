@@ -13,7 +13,8 @@ public:
     std::unordered_set<listener*> listeners() const;
 
     void activation(event_type t, const listener_registry::activation_fn& fn);
-    void remove_activation(event_type t);
+    void activation(const std::unordered_set<event_type>& t, const listener_registry::activation_fn& fn);
+    void remove_activations();
 
 };
 

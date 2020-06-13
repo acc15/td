@@ -4,6 +4,7 @@ namespace td {
 
 emitter::~emitter() {
     listener_registry::get().unlink(this);
+    listener_registry::get().remove_activations(this);
 }
 
 void emitter::emit(const event& ev) {
@@ -22,8 +23,12 @@ void emitter::activation(event_type t, const listener_registry::activation_fn& f
     listener_registry::get().activation(this, t, fn);
 }
 
-void emitter::remove_activation(event_type t) {
-    listener_registry::get().remove_activation(this, t);
+void emitter::activation(const std::unordered_set<event_type>& t, const listener_registry::activation_fn& fn) {
+    listener_registry::get().activation(this, t, fn);
+}
+
+void emitter::remove_activations() {
+    listener_registry::get().remove_activations(this);
 }
 
 

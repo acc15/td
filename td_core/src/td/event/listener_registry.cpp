@@ -4,7 +4,7 @@ namespace td {
 
 bool listener_registry::erase_et_entry(emitter* e, event_type t, const event_type_map::iterator& et_iter, event_type_map& et_map) {
     if (erase_if_nested_empty(et_iter, et_map)) {
-        call_activation(e, t, false);
+        call_activations(e, t, false);
         return true;
     }
     return false;
@@ -26,13 +26,36 @@ void listener_registry::unlink_by_iterators(const std::pair<emitter*, const list
     erase_if_nested_empty(e_iter, _e);
 }
 
-void listener_registry::call_activation(emitter* e, event_type t, bool active) const {
-    auto act_key = std::make_pair(e, t);
-    const auto act_iter = _a.find(act_key);
-    if (act_iter == _a.end()) {
+bool listener_registry::check_activation_deps(emitter* e, const std::unordered_set<event_type>& deps) const {
+    const auto e_iter = _e.find(e);
+    if (e_iter == _e.end()) {
+        return deps.empty();
+    }
+
+    const event_type_map& et_map = e_iter->second;
+    for (const event_type& t: deps) {
+        if (et_map.count(t) > 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void listener_registry::call_activations(emitter* e, event_type t, bool active) const {
+
+    auto a_iter = _a.find(e);
+    if (a_iter == _a.end()) {
         return;
     }
-    act_iter->second(e, t, active);
+
+    auto at_range = a_iter->second.equal_range(t);
+    for (auto at_iter = at_range.first; at_iter != at_range.second; ++at_iter) {
+        if (!check_activation_deps(e, at_iter->second.second)) {
+            continue;
+        }
+        at_iter->second.first(active);
+    }
+
 }
 
 listener_registry& listener_registry::get() {
@@ -44,7 +67,7 @@ listener_tag listener_registry::link(emitter* e, listener* l, event_type t, cons
 
     priority_map& p_map = _e[e][t];
     if (p_map.empty()) {
-        call_activation(e, t, true);
+        call_activations(e, t, true);
     }
     
     const auto iter = p_map.insert(std::make_pair(p, std::make_pair(l, h)));
@@ -90,7 +113,7 @@ void listener_registry::unlink(emitter* e) {
 
         // calling activation for each registered event type - later we will remove whole emitter map
         if (!et_entry.second.empty()) {
-            call_activation(e, et_entry.first, false);
+            call_activations(e, et_entry.first, false);
         }
 
     }
@@ -204,15 +227,27 @@ std::unordered_set<listener*> listener_registry::listeners_of(const emitter* e) 
 }
 
 bool listener_registry::empty() const {
-    return _l.empty() && _e.empty();
+    return _l.empty() && _e.empty() && _a.empty();
 }
 
 void listener_registry::activation(emitter* e, event_type t, const activation_fn& fn) {
-    _a[std::make_pair(e, t)] = fn;
+    _a[e].insert(std::make_pair(t, std::make_pair( fn, std::unordered_set<event_type>() )));
 }
 
-void listener_registry::remove_activation(emitter* e, event_type t) {
-    _a.erase(std::make_pair(e, t));
+void listener_registry::activation(emitter* e, const std::unordered_set<event_type>& ts, const activation_fn& fn) {
+    for (const event_type& t: ts) {
+        std::unordered_set deps(ts);
+        deps.erase(t);
+        _a[e].insert(std::make_pair(t, std::make_pair( fn, deps )));
+    }
+}
+
+bool listener_registry::has_activations(emitter *e) const {
+    return _a.count(e) > 0;
+}
+
+void listener_registry::remove_activations(emitter* e) {
+    _a.erase(e);
 }
 
 }

@@ -15,7 +15,7 @@ class emitter;
 class listener_registry {
 public:
     typedef std::function<void(const event&)> handler_fn;
-    typedef std::function<void(emitter*, event_type, bool)> activation_fn;
+    typedef std::function<void(bool)> activation_fn;
 
 private:
     listener_registry() = default;
@@ -36,7 +36,11 @@ private:
     typedef std::unordered_map<emitter*, listener_iterator_map> listener_emitter_map;
     typedef std::unordered_map<listener*, listener_emitter_map> listener_ref_map;
 
-    typedef std::unordered_map<std::pair<emitter*, event_type>, activation_fn, pair_hash<emitter*, event_type> > activation_map;
+    typedef std::unordered_map<emitter*,
+        std::unordered_multimap<event_type,
+            std::pair<activation_fn, std::unordered_set<event_type>>
+        >
+    > activation_map;
 
     emitter_map _e;
     listener_ref_map _l;
@@ -55,7 +59,8 @@ private:
 
     void unlink_by_iterators(const std::pair<emitter*, const listener_iterator_map&>& le_entry);
 
-    void call_activation(emitter* e, event_type t, bool active) const;
+    bool check_activation_deps(emitter* e, const std::unordered_set<event_type>& deps) const;
+    void call_activations(emitter* e, event_type t, bool active) const;
 
 public:
     struct listener_tag {
@@ -150,11 +155,30 @@ public:
     void activation(emitter* e, event_type t, const activation_fn& fn);
 
     /**
-     * Removes activation function
+     * Allows to monitor when
+     *  [*] at least one listener attached to one of provided event_types
+     *  [*] all listeners detached for specific emitter and provided event_types
+     * Useful for optimizing performance and listen for MOUSE_MOVE, RENDER
+     * and other intensive events
+     * only when it's actually needed - when at least one listener linked
      * @param e emitter
-     * @param t event type
+     * @param t set of event type
+     * @param fn activation function
      */
-    void remove_activation(emitter* e, event_type t);
+    void activation(emitter* e, const std::unordered_set<event_type>& t, const activation_fn& fn);
+
+    /**
+     * Checks whether specified emitter has at least one activation function
+     * @param e emitter
+     * @return true if e has at least one activation function
+     */
+    bool has_activations(emitter* e) const;
+
+    /**
+     * Removes activation functions for specific emitter
+     * @param e emitter
+     */
+    void remove_activations(emitter* e);
 
 };
 

@@ -219,31 +219,66 @@ TEST_CASE("listener") {
 
     }
 
+    SECTION("activation must be removed if emitter is destroyed") {
+
+        emitter* e_ptr = nullptr;
+
+        {
+            emitter e_tmp;
+            e_ptr = &e_tmp;
+            e_tmp.activation(event_type::PROCESS, [](bool active) -> void {});
+            REQUIRE(listener_registry::get().has_activations(e_ptr));
+        }
+
+        REQUIRE_FALSE(listener_registry::get().has_activations(e_ptr));
+        REQUIRE(listener_registry::get().empty());
+
+    }
+
     SECTION("activation function called correctly") {
 
         typedef std::tuple<emitter*, event_type, bool> act_args;
-        std::vector<act_args> activation_calls;
+        std::vector<bool> activation_calls;
 
-        listener_registry::get().activation(&e1, event_type::PROCESS, [&activation_calls](emitter* e, event_type t, bool active) -> void {
-            activation_calls.emplace_back(e, t, active);
+        emitter e;
+        e.activation(event_type::PROCESS, [&activation_calls](bool active) -> void {
+            activation_calls.emplace_back(active);
         });
 
-        l1.listen(&e1, &test_listener::render);
-        l1.listen(&e1, &test_listener::process);
+        l1.listen(&e, &test_listener::process);
+        REQUIRE( activation_calls == std::vector<bool>({ true }) );
 
-        REQUIRE( activation_calls == std::vector<act_args>({ std::make_tuple(&e1, event_type::PROCESS, true) }) );
+        l2.listen(&e, &test_listener::process);
+        REQUIRE( activation_calls == std::vector<bool>({ true }) );
 
-        l2.listen(&e1, &test_listener::process);
-        REQUIRE( activation_calls == std::vector<act_args>({ std::make_tuple(&e1, event_type::PROCESS, true) }) );
+        l2.mute(&e);
+        REQUIRE( activation_calls == std::vector<bool>({ true }) );
 
-        l2.mute(&e1);
-        REQUIRE( activation_calls == std::vector<act_args>({ std::make_tuple(&e1, event_type::PROCESS, true) }) );
+        l1.mute(&e);
+        REQUIRE( activation_calls == std::vector<bool>({ true, false }) );
 
-        l1.mute(&e1);
-        REQUIRE( activation_calls == std::vector<act_args>({
-            std::make_tuple(&e1, event_type::PROCESS, true),
-            std::make_tuple(&e1, event_type::PROCESS, false)
-        }) );
+    }
+
+    SECTION("multi-event activation must be called correctly") {
+
+        std::vector<bool> activation_calls;
+
+        emitter e;
+        e.activation({ event_type::PROCESS, event_type::RENDER }, [&activation_calls](bool active) -> void {
+            activation_calls.emplace_back(active);
+        });
+
+        auto t1 = l1.listen(&e, &test_listener::process);
+        REQUIRE(activation_calls == std::vector<bool>({ true }));
+
+        auto t2 = l1.listen(&e, &test_listener::render);
+        REQUIRE(activation_calls == std::vector<bool>({ true }));
+
+        l1.mute(t1);
+        REQUIRE(activation_calls == std::vector<bool>({ true }));
+
+        l1.mute(t2);
+        REQUIRE(activation_calls == std::vector<bool>({ true, false }));
 
     }
 
