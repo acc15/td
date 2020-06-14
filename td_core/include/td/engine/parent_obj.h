@@ -11,7 +11,7 @@ public:
     virtual ~parent_obj();
 
     void add_child(child_obj* c);
-    child_obj* child(size_t n);
+    child_obj* child(size_t n) const;
     size_t child_count() const;
 
     std::vector<child_obj*> children() const;

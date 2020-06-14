@@ -2,8 +2,6 @@
 #include <td/engine/obj.h>
 
 struct test_struct {
-    size_t attach_count = 0;
-    size_t detach_count = 0;
     bool destroyed = false;
 };
 
@@ -20,17 +18,6 @@ public:
         }
     }
 
-    void attach() override {
-        if (_ts != nullptr) {
-            ++_ts->attach_count;
-        }
-    }
-
-    void detach() override {
-        if (_ts != nullptr) {
-            ++_ts->detach_count;
-        }
-    }
 };
 
 TEST_CASE("obj") {
@@ -44,20 +31,16 @@ TEST_CASE("obj") {
         {
             test_obj c(&ts);
             c.parent(&p);
-
-            REQUIRE(ts.attach_count == 1);
             REQUIRE(c.parent() == &p);
             REQUIRE(p.children() == std::vector<td::child_obj*>({&c}));
         }
 
         REQUIRE(ts.destroyed);
-        REQUIRE(ts.detach_count == 1);
-
         REQUIRE(p.child_count() == 0);
 
     }
 
-    SECTION("resetting parent calls detach") {
+    SECTION("resetting parent removes child") {
 
         test_struct ts;
         td::obj p;
@@ -66,14 +49,11 @@ TEST_CASE("obj") {
 
             test_obj c(&ts);
             c.parent(&p);
-            REQUIRE(ts.attach_count == 1);
             REQUIRE(p.child_count() == 1);
             c.parent(nullptr);
-            REQUIRE(ts.detach_count == 1);
+            REQUIRE(p.child_count() == 0);
 
         }
-
-        REQUIRE(p.child_count() == 0);
 
     }
 
@@ -101,7 +81,7 @@ TEST_CASE("obj") {
         }
     }
 
-    SECTION("switching parent must call detach and attach") {
+    SECTION("switching parent must move child to another parent") {
 
         test_struct ts;
 
@@ -111,16 +91,12 @@ TEST_CASE("obj") {
 
         c.parent(&p1);
         REQUIRE(c.parent() == &p1);
-        REQUIRE(ts.attach_count == 1);
-        REQUIRE(ts.detach_count == 0);
         REQUIRE(p1.child_count() == 1);
 
         c.parent(&p2);
         REQUIRE(c.parent() == &p2);
-        REQUIRE(ts.attach_count == 2);
-        REQUIRE(ts.detach_count == 1);
         REQUIRE(p1.child_count() == 0);
-        REQUIRE(p2.child_count() == 0);
+        REQUIRE(p2.child_count() == 1);
 
     }
 
@@ -159,6 +135,20 @@ TEST_CASE("obj") {
         c2.parent(&p);
 
         REQUIRE(p.children() == std::vector<td::child_obj*>({ &c1, &c3, &c2 }));
+
+    }
+
+    SECTION("must avoid changing position if parent is same") {
+
+        test_obj p;
+        test_obj c1;
+        test_obj c2;
+
+        c1.parent(&p);
+        c2.parent(&p);
+        c1.parent(&p);
+
+        REQUIRE(p.child(0) == &c1);
 
     }
 

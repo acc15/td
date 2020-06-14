@@ -3,22 +3,23 @@
 namespace td {
 
 parent_obj::~parent_obj() {
+    obj_registry::get().unlink(this);
 }
 
 void parent_obj::add_child(child_obj* c) {
-
+    obj_registry::get().link(c, this);
 }
 
-child_obj* parent_obj::child(size_t n) {
-    return nullptr;
+child_obj* parent_obj::child(size_t n) const {
+    return obj_registry::get().child(this, n);
 }
 
 size_t parent_obj::child_count() const {
-    return 0;
+    return obj_registry::get().child_count(this);
 }
 
 std::vector<child_obj*> parent_obj::children() const {
-    return std::vector<child_obj*>();
+    return obj_registry::get().children(this);
 }
 
 

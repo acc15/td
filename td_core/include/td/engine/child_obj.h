@@ -11,13 +11,6 @@ public:
     parent_obj* parent() const;
     void parent(parent_obj* parent);
 
-    // called after parent is set
-    virtual void attach();
-
-    // called before parent reset
-    virtual void detach();
-
-
 };
 
 }

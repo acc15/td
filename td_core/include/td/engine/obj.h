@@ -10,7 +10,7 @@
 
 namespace td {
 
-class obj : public child_obj, public parent_obj, public listener, public emitter {
+class obj : public child_obj, public listener, public emitter, public parent_obj {
 public:
 
     template<typename E>
@@ -27,7 +27,7 @@ public:
     obj *tag(const std::string &tag);
     obj *untag();
 
-    static obj *by_tag(const std::string &tag);
+    static obj* by_tag(const std::string &tag);
 
 };
 
