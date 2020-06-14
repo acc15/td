@@ -27,18 +27,12 @@ public:
 
 };
 
-template<typename T, typename ... Args>
-T& mk(Args... args) {
-    return *new T(args...);
-}
-
 void td_init() {
 
-    td::engine& e = td::engine::get();
-    e.title("td_pong");
-
-    e.add(mk<pong_scene>()
-        .add(mk<ball>())
+    td::engine* e = td::engine::get();
+    e->title("td_pong");
+    e->add((new pong_scene())
+        ->add(new ball())
     );
 
     /*

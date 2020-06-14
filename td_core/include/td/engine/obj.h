@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cassert>
+
 #include "../event/listener.h"
 #include "../event/emitter.h"
 
@@ -8,15 +10,24 @@
 
 namespace td {
 
-class obj: public parent_obj, public child_obj, public listener, public emitter {
+class obj : public listener, public emitter, public parent_obj, public child_obj {
 public:
 
     template<typename E>
-    void forward(emitter& e) {
-        listen(e, [](const E& e) -> void { emit(e); });
+    void forward(emitter *e) {
+        assert(e != this); // can't forward events from self (infinite loop)
+        listen(e, [this](const E &e) -> void { this->emit(e); });
     }
 
-    obj& add(child_obj& c);
+    obj *add(child_obj *c);
+
+    std::string tag() const;
+
+    obj *tag(const std::string &tag);
+
+    obj *untag();
+
+    static obj *by_tag(const std::string &tag);
 
 };
 

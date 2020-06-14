@@ -12,8 +12,9 @@ public:
     void link(parent_obj* parent, child_obj* child);
 
 private:
-    std::unordered_multimap<parent_obj*, child_obj*> _children;
+    std::unordered_map<parent_obj*, std::vector<child_obj*>> _children;
     std::unordered_map<child_obj*, parent_obj*> _parents;
+
 };
 
 }

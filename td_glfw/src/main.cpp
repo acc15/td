@@ -10,25 +10,25 @@ extern void td_init();
 void draw_frame() {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
-    td::engine::get().emit(td::render_event());
+    td::engine::get()->emit(td::render_event());
 }
 
 void process_frame() {
-    td::engine::get().emit(td::process_event());
+    td::engine::get()->emit(td::process_event());
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     switch (action) {
         case GLFW_PRESS:
-            td::engine::get().emit(td::key_down_event(scancode));
+            td::engine::get()->emit(td::key_down_event(scancode));
             break;
 
         case GLFW_RELEASE:
-            td::engine::get().emit(td::key_up_event(scancode));
+            td::engine::get()->emit(td::key_up_event(scancode));
             break;
 
         case GLFW_REPEAT:
-            td::engine::get().emit(td::key_repeat_event(scancode));
+            td::engine::get()->emit(td::key_repeat_event(scancode));
             break;
 
         default:

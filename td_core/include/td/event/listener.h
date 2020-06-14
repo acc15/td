@@ -19,11 +19,11 @@ public:
     virtual ~listener();
 
     template <typename F>
-    listener_tag listen(emitter& emitter, const F& handler, size_t priority = 0) {
+    listener_tag listen(emitter* emitter, const F& handler, size_t priority = 0) {
         auto fn = fn_cast<listener, F>::to_fn(this, handler);
         std::pair<event_type,listener_registry::handler_fn> h = to_handler(fn);
         return listener_registry::get().link(
-                &emitter,
+                emitter,
                 this,
                 h.first,
                 h.second,
@@ -34,7 +34,7 @@ public:
      * Remove all handlers by emitter
      * @param e emitter
      */
-    void mute(emitter& e);
+    void mute(emitter* e);
 
     /**
      * Remove single handler by returned tag

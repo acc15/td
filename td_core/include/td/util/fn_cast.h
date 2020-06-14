@@ -21,7 +21,7 @@ struct fn_cast<L, std::function<S>> {
 template<typename L, typename D, typename Ret, typename ... Args>
 struct fn_cast<L, Ret (D::*)(Args...)> {
     static std::function<Ret(Args...)> to_fn(L* l, Ret(D::*h)(Args...)) {
-        return [l, h](Args... args) -> Ret { return (reinterpret_cast<D*>(l)->*h)(args...); };
+        return [l, h](Args... args) -> Ret { return (dynamic_cast<D*>(l)->*h)(args...); };
     }
 };
 

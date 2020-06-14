@@ -6,9 +6,9 @@ namespace td {
 
 engine* engine::_instance = nullptr;
 
-engine& engine::get() {
+engine* engine::get() {
     assert(_instance != nullptr); // engine not initialized
-    return *_instance;
+    return _instance;
 }
 
 engine::engine() {
@@ -20,5 +20,12 @@ engine::~engine() {
     assert(_instance != nullptr); // engine not initialized
     _instance = nullptr;
 }
+
+engine* engine::add(child_obj* c) {
+    add_child(c);
+    return this;
+}
+
+
 
 }
