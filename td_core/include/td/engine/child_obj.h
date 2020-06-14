@@ -8,8 +8,15 @@ class child_obj {
 public:
     virtual ~child_obj();
 
-    parent_obj* parent() const;
+    template <typename T>
+    T* parent() const {
+        return dynamic_cast<T*>(obj_registry::get().parent(this));
+    }
+
     void parent(parent_obj* parent);
+
+    virtual void attach();
+    virtual void detach();
 
 };
 

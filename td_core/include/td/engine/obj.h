@@ -7,6 +7,7 @@
 
 #include "child_obj.h"
 #include "parent_obj.h"
+#include "tag_registry.h"
 
 namespace td {
 
@@ -19,7 +20,8 @@ public:
         listen(e, [this](const E &e) -> void { this->emit(e); });
     }
 
-    virtual ~obj();
+    ~obj() override;
+    void detach() override;
 
     obj *add(child_obj *c);
 
@@ -27,7 +29,10 @@ public:
     obj *tag(const std::string &tag);
     obj *untag();
 
-    static obj* by_tag(const std::string &tag);
+    template <typename T>
+    static T* by_tag(const std::string &tag) {
+        return dynamic_cast<T*>(tag_registry::get().by_tag(tag));
+    }
 
 };
 

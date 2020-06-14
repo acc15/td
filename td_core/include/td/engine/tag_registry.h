@@ -3,9 +3,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "obj.h"
-
 namespace td {
+
+class obj;
 
 class tag_registry {
 public:

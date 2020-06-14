@@ -1,5 +1,6 @@
 
 #include <td/engine/tag_registry.h>
+#include <td/engine/obj.h>
 
 namespace td {
 

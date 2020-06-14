@@ -12,7 +12,9 @@ public:
     static obj_registry& get();
 
     void link(child_obj* c, parent_obj* p);
+
     void unlink(parent_obj* p);
+    void unlink(child_obj* c);
 
     size_t child_count(const parent_obj* p) const;
     child_obj* child(const parent_obj* p, size_t n) const;
@@ -21,6 +23,8 @@ public:
     parent_obj* parent(const child_obj* c) const;
 
 private:
+    void unlink_children(child_obj* c, parent_obj* p);
+
     obj_registry() = default;
 
     std::unordered_map<parent_obj*, std::vector<child_obj*>> _c;

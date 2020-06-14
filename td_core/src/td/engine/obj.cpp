@@ -7,6 +7,10 @@ obj::~obj() {
     tag_registry::get().untag(this);
 }
 
+void obj::detach() {
+    mute();
+}
+
 obj* obj::add(child_obj* c) {
     add_child(c);
     return this;
@@ -24,10 +28,6 @@ obj* obj::tag(const std::string& tag) {
 obj* obj::untag() {
     tag_registry::get().untag(this);
     return this;
-}
-
-obj* obj::by_tag(const std::string& tag) {
-    return tag_registry::get().by_tag(tag);
 }
 
 }

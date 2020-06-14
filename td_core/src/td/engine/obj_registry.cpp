@@ -20,20 +20,9 @@ void obj_registry::link(child_obj* c, parent_obj* p) {
             return;
         }
 
-        auto c_iter = _c.find(p_iter->second);
-        if (c_iter == _c.end()) {
-            return;
-        }
+        c->detach();
 
-        std::vector<child_obj*>& c_vec = c_iter->second;
-        auto cv_iter = std::find(c_vec.begin(), c_vec.end(), c);
-        if (cv_iter != c_vec.end()) {
-            c_vec.erase(cv_iter);
-        }
-        if (c_vec.empty()) {
-            _c.erase(c_iter);
-        }
-
+        unlink_children(c, p_iter->second);
         if (p == nullptr) {
             _p.erase(p_iter);
             return;
@@ -48,6 +37,7 @@ void obj_registry::link(child_obj* c, parent_obj* p) {
     }
 
     _c[p].push_back(c);
+    c->attach();
 }
 
 void obj_registry::unlink(parent_obj* p) {
@@ -62,6 +52,16 @@ void obj_registry::unlink(parent_obj* p) {
     }
 
     _c.erase(c_iter);
+}
+
+void obj_registry::unlink(child_obj* c) {
+    auto p_iter = _p.find(c);
+    if (p_iter == _p.end()) {
+        return;
+    }
+
+    unlink_children(c, p_iter->second);
+    _p.erase(p_iter);
 }
 
 size_t obj_registry::child_count(const parent_obj* p) const {
@@ -82,6 +82,23 @@ std::vector<child_obj*> obj_registry::children(const parent_obj* p) const {
 parent_obj* obj_registry::parent(const child_obj* c) const {
     auto p_iter = _p.find(const_cast<child_obj*>(c));
     return p_iter != _p.end() ? p_iter->second : nullptr;
+}
+
+
+void obj_registry::unlink_children(child_obj* c, parent_obj* p) {
+    auto c_iter = _c.find(p);
+    if (c_iter == _c.end()) {
+        return;
+    }
+
+    std::vector<child_obj*>& c_vec = c_iter->second;
+    auto cv_iter = std::find(c_vec.begin(), c_vec.end(), c);
+    if (cv_iter != c_vec.end()) {
+        c_vec.erase(cv_iter);
+    }
+    if (c_vec.empty()) {
+        _c.erase(c_iter);
+    }
 }
 
 }

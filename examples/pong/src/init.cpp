@@ -18,7 +18,7 @@ public:
 class ball: public td::obj {
 public:
     void attach() override {
-        listen(td::engine::get(), &ball::render);
+        listen(parent<pong_scene>(), &ball::render);
     }
 
     void render(const td::render_event& e) {

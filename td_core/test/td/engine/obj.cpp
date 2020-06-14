@@ -2,6 +2,8 @@
 #include <td/engine/obj.h>
 
 struct test_struct {
+    size_t attach_count = 0;
+    size_t detach_count = 0;
     bool destroyed = false;
 };
 
@@ -18,11 +20,23 @@ public:
         }
     }
 
+    void attach() override {
+        if (_ts != nullptr) {
+            ++_ts->attach_count;
+        }
+    }
+
+    void detach() override {
+        if (_ts != nullptr) {
+            ++_ts->detach_count;
+        }
+    }
+
 };
 
 TEST_CASE("obj") {
 
-    SECTION("setting parent calls attach, destructor calls detach") {
+    SECTION("setting parent calls attach") {
 
         test_struct ts;
 
@@ -31,16 +45,18 @@ TEST_CASE("obj") {
         {
             test_obj c(&ts);
             c.parent(&p);
-            REQUIRE(c.parent() == &p);
+            REQUIRE(ts.attach_count == 1);
+            REQUIRE(c.parent<td::obj>() == &p);
             REQUIRE(p.children() == std::vector<td::child_obj*>({&c}));
         }
 
         REQUIRE(ts.destroyed);
+        REQUIRE(ts.detach_count == 0);
         REQUIRE(p.child_count() == 0);
 
     }
 
-    SECTION("resetting parent removes child") {
+    SECTION("resetting parent removes child and calls detach") {
 
         test_struct ts;
         td::obj p;
@@ -50,8 +66,10 @@ TEST_CASE("obj") {
             test_obj c(&ts);
             c.parent(&p);
             REQUIRE(p.child_count() == 1);
+            REQUIRE(ts.attach_count == 1);
             c.parent(nullptr);
             REQUIRE(p.child_count() == 0);
+            REQUIRE(ts.detach_count == 1);
 
         }
 
@@ -79,6 +97,10 @@ TEST_CASE("obj") {
         if (!ts2.destroyed) {
             delete c2;
         }
+
+        // destructor don't call detach()
+        REQUIRE(ts1.detach_count == 0);
+        REQUIRE(ts2.detach_count == 0);
     }
 
     SECTION("switching parent must move child to another parent") {
@@ -90,13 +112,16 @@ TEST_CASE("obj") {
         test_obj c(&ts);
 
         c.parent(&p1);
-        REQUIRE(c.parent() == &p1);
+        REQUIRE(c.parent<td::obj>() == &p1);
         REQUIRE(p1.child_count() == 1);
+        REQUIRE(ts.attach_count == 1);
 
         c.parent(&p2);
-        REQUIRE(c.parent() == &p2);
+        REQUIRE(c.parent<td::obj>() == &p2);
         REQUIRE(p1.child_count() == 0);
         REQUIRE(p2.child_count() == 1);
+        REQUIRE(ts.attach_count == 2);
+        REQUIRE(ts.detach_count == 1);
 
     }
 
@@ -105,9 +130,9 @@ TEST_CASE("obj") {
         {
             test_obj obj;
             obj.tag("test");
-            REQUIRE(test_obj::by_tag("test") == &obj);
+            REQUIRE(test_obj::by_tag<test_obj>("test") == &obj);
         }
-        REQUIRE(test_obj::by_tag("test") == nullptr);
+        REQUIRE(test_obj::by_tag<test_obj>("test") == nullptr);
 
     }
 
@@ -116,7 +141,7 @@ TEST_CASE("obj") {
         test_obj obj;
         obj.tag("test");
         obj.untag();
-        REQUIRE( test_obj::by_tag("test") == nullptr );
+        REQUIRE( test_obj::by_tag<test_obj>("test") == nullptr );
 
     }
 
@@ -140,15 +165,20 @@ TEST_CASE("obj") {
 
     SECTION("must avoid changing position if parent is same") {
 
+        test_struct ts;
+
         test_obj p;
-        test_obj c1;
+        test_obj c1(&ts);
         test_obj c2;
 
         c1.parent(&p);
+        REQUIRE(ts.attach_count == 1);
         c2.parent(&p);
         c1.parent(&p);
+        REQUIRE(ts.attach_count == 1);
+        REQUIRE(ts.detach_count == 0);
 
-        REQUIRE(p.child(0) == &c1);
+        REQUIRE(p.child<test_obj>(0) == &c1);
 
     }
 
