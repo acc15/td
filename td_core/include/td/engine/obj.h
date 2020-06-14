@@ -10,7 +10,7 @@
 
 namespace td {
 
-class obj : public listener, public emitter, public parent_obj, public child_obj {
+class obj : public child_obj, public parent_obj, public listener, public emitter {
 public:
 
     template<typename E>
@@ -19,12 +19,12 @@ public:
         listen(e, [this](const E &e) -> void { this->emit(e); });
     }
 
+    virtual ~obj();
+
     obj *add(child_obj *c);
 
     std::string tag() const;
-
     obj *tag(const std::string &tag);
-
     obj *untag();
 
     static obj *by_tag(const std::string &tag);

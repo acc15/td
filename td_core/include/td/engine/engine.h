@@ -5,7 +5,7 @@
 
 namespace td {
 
-class engine : public emitter, public parent_obj {
+class engine : public parent_obj, public emitter {
 public:
     static engine* get();
     engine();

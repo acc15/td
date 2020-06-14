@@ -2,6 +2,9 @@
 
 namespace td {
 
+obj::~obj() {
+}
+
 obj* obj::add(child_obj* c) {
     add_child(c);
     return this;
