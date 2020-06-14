@@ -21,7 +21,7 @@ public:
         listen(td::engine::get(), &ball::render);
     }
 
-    void render() {
+    void render(const td::render_event& e) {
 
     }
 
