@@ -6,6 +6,7 @@
 #include <td/shader/program.h>
 #include <td/shader/shader.h>
 #include <td/gl/bo.h>
+#include <td/core/assert.h>
 
 class pong_res: public td::obj {
 public:

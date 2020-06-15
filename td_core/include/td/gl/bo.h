@@ -1,8 +1,11 @@
 #pragma once
 
+#include <fmt/format.h>
+
 #include <td/core/buf.h>
 #include <td/gl/gl.h>
 #include <td/gl/gl_type.h>
+#include <td/core/assert.h>
 
 namespace td {
 
@@ -16,6 +19,7 @@ public:
     }
 
     bo& bind() const {
+        TD_ASSERT(_id != 0, fmt::format("Attempt to bind empty buffer object of type {}", Type));
         glBindBuffer(Type, _id);
     }
 
@@ -38,10 +42,11 @@ public:
     }
 
     void rm() {
-        if (_id != 0) {
-            glDeleteBuffers(1, &_id);
-            _id = 0;
+        if (_id == 0) {
+            return;
         }
+        glDeleteBuffers(1, &_id);
+        _id = 0;
     }
 
 private:
