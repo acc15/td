@@ -8,6 +8,99 @@
 #include <td/gl/bo.h>
 #include <td/core/assert.h>
 
+
+#include <stdexcept>
+
+namespace td {
+
+struct uniform_resolver {
+    inline static GLuint resolve(GLuint p, const char* name) {
+        return glGetUniformLocation(p, name);
+    }
+};
+
+struct attr_resolver {
+    inline static GLuint resolve(GLuint p, const char* name) {
+        return glGetAttribLocation(p, name);
+    }
+};
+
+template <typename Resolver>
+class program_ref {
+public:
+
+    program_ref(GLint location): _name(nullptr), _location(location) {
+    }
+
+    program_ref(const char* name): _name(name), _location(-1) {
+    }
+
+    GLint location(GLuint p) {
+        if (_location != -1) {
+            return _location;
+        }
+        if (_name != nullptr) {
+            _location = Resolver::resolve(p, _name);
+        }
+        if (_location == -1) {
+            throw std::invalid_argument(_name != nullptr
+                ? fmt::format("Invalid uniform name: {}, location: {}", _name, _location)
+                : fmt::format("Invalid uniform location {}", _location));
+        }
+        return _location;
+    }
+
+private:
+
+    const char* _name;
+    GLint _location;
+
+};
+
+typedef program_ref<uniform_resolver> uniform_ref;
+typedef program_ref<attr_resolver> attribute_ref;
+
+
+class drawer {
+public:
+
+    // only external references accepted
+    // this is intentional to avoid compiling program every draw operation
+    drawer(td::program& p): _p(p.id()) {
+        glUseProgram(_p);
+    }
+
+    template <typename T>
+    drawer& uniform(uniform_ref name, const std::initializer_list<T>& value) {
+        return uniform(name, std::vector<T>(value));
+    }
+
+    template <typename T>
+    drawer& uniform(uniform_ref name, const T& value) {
+        glUniform2d(name.location(_p), 0.0, 0.0);
+        return *this;
+    }
+
+    template <typename T>
+    drawer& attr(attribute_ref name, const std::initializer_list<T>& value) {
+        return attr(name, std::vector<T>(value));
+    }
+
+    template <typename T>
+    drawer& attr(attribute_ref name, const T& value) {
+        glVertexAttrib1d(name.location(_p), 0.0);
+        return *this;
+    }
+
+private:
+    GLuint _p;
+
+};
+
+
+
+}
+
 class pong_res: public td::obj {
 public:
     static constexpr char TAG[] = "res";
@@ -30,7 +123,7 @@ public:
         .add(POSITION_MVP_VERTEX)
         .add(SINGLE_COLOR_FRAGMENT);
 
-    td::vbo<> TRIANGLE_VBO = td::vbo()
+    td::vbo<> TRIANGLE_VBO = td::vbo<>()
             << 0.f << -1.f
             << -1.f << 1.f
             << 1.f << 1.f;
@@ -44,6 +137,15 @@ public:
         glGenBuffers(N_BUFS, bufs);
 
         TRIANGLE_VBO.apply(bufs[0]);
+
+        Eigen::Vector4f m;
+        std::cout << m.rows() << " " << m.cols() << std::endl;
+
+        /*
+        td::drawer(SINGLE_COLOR_PROGRAM)
+            .uniform("u_mvpMatrix", { 1.f, 2.f, 3.f })
+            .attr(1, { 1.f });*/
+
 
         // TRIANGLE_VBO.apply(); - calls glGenBuffers(1, &n);
         // TRIANGLE_VBO.apply(bufs[0]);, GL_STATIC_DRAW); - remembers id
