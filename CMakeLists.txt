@@ -32,7 +32,7 @@ add_subdirectory(ext/fmt EXCLUDE_FROM_ALL)
 find_package(OpenGL REQUIRED)
 
 set(GLEW_VERBOSE TRUE)
-set(GLEW_USE_STATIC_LIBS TRUE)
+set(GLEW_USE_STATIC_LIBS ${WIN32})
 find_package(GLEW REQUIRED)
 
 find_package(PNG REQUIRED)

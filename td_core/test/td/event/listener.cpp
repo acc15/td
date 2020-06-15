@@ -256,7 +256,6 @@ TEST_CASE("listener") {
 
     SECTION("activation function called correctly") {
 
-        typedef std::tuple<emitter*, event_type, bool> act_args;
         std::vector<bool> activation_calls;
 
         emitter e;
