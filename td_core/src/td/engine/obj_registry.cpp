@@ -46,11 +46,11 @@ void obj_registry::unlink(parent_obj* p) {
         return;
     }
 
-    for (child_obj* c: c_iter->second) {
-        _p.erase(c);
-        delete c;
+    std::vector<child_obj*>& c_vec = c_iter->second;
+    for (auto it = c_vec.rbegin(); it != c_vec.rend(); ++it) {
+        _p.erase(*it);
+        delete *it;
     }
-
     _c.erase(c_iter);
 }
 

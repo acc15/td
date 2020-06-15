@@ -34,6 +34,11 @@ public:
         return dynamic_cast<T*>(tag_registry::get().by_tag(tag));
     }
 
+    template <typename T>
+    static T* by_tag() {
+        return dynamic_cast<T*>(tag_registry::get().by_tag(T::TAG));
+    }
+
 };
 
 }

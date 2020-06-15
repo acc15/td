@@ -1,4 +1,7 @@
 
+#include <stdexcept>
+#include <fmt/format.h>
+
 #include <td/engine/tag_registry.h>
 #include <td/engine/obj.h>
 
@@ -46,6 +49,9 @@ void tag_registry::untag(obj* o) {
 
 obj* tag_registry::by_tag(const std::string& t) const {
     auto t_iter = _t.find(t);
+    if (t_iter == _t.end()) {
+        throw std::invalid_argument(fmt::format("unknown tag {}", t));
+    }
     return t_iter != _t.end() ? t_iter->second : nullptr;
 }
 
