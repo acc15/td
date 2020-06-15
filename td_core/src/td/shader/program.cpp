@@ -11,7 +11,12 @@ program::program() : _id(0) {
 }
 
 
-program::program(program&& mv) noexcept: _id(mv._id), _internals(std::move(mv._internals)), _externals(std::move(mv._externals)) {
+program::program(program&& mv) noexcept:
+    _id(mv._id),
+    _attrs_locs(mv._attrs_locs),
+    _internals(std::move(mv._internals)),
+    _externals(std::move(mv._externals)
+) {
     mv._id = 0;
 }
 
@@ -22,32 +27,38 @@ program::~program() {
 program& program::operator=(program&& mv) noexcept {
     rm();
     std::swap(_id, mv._id);
+    _attrs_locs = mv._attrs_locs;
     _internals = std::move(mv._internals);
     _externals = std::move(mv._externals);
     return *this;
 }
 
 
-program& program::add(shader&& mv) {
+program&& program::add(shader&& mv) {
     _internals.push_back(mv);
-    return *this;
+    return this_mv();
 }
 
-program& program::add(shader& cp) {
+program&& program::add(shader& cp) {
     _externals.push_back(std::ref(cp));
-    return *this;
+    return this_mv();
 }
 
-program& program::add(shader_type type, const char* src) {
+program&& program::add(shader_type type, const char* src) {
     return add(shader(type, src));
 }
 
-program& program::vertex(const char* src) {
+program&& program::vertex(const char* src) {
     return add(shader_type::VERTEX, src);
 }
 
-program& program::fragment(const char* src) {
+program&& program::fragment(const char* src) {
     return add(shader_type::FRAGMENT, src);
+}
+
+program&& program::attr(const char* name, GLuint index) {
+    _attrs_locs[name] = index;
+    return this_mv();
 }
 
 const std::vector<std::reference_wrapper<shader>>& program::externals() const {
@@ -58,10 +69,6 @@ const std::vector<shader>& program::internals() const {
     return _internals;
 }
 
-program& program::attr(const char* name, GLuint index) {
-    _attrs_locs[name] = index;
-    return *this;
-}
 
 GLuint program::id() {
     if (_id != 0) {
@@ -116,6 +123,10 @@ void program::rm() {
 
     glDeleteProgram(_id);
     _id = 0;
+}
+
+program&& program::this_mv() {
+    return std::move( *this );
 }
 
 

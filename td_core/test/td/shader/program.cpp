@@ -101,9 +101,9 @@ TEST_CASE("program") {
         cp.add(shader(shader_type::VERTEX, "vertex"));
 
         CHECK( move_semantics_tester<td::program>(td::program()).type() == ref_type::RV );
-        CHECK( move_semantics_tester<td::program>(td::program().add(td::shader(shader_type::FRAGMENT, "fragment"))).type() == ref_type::LV );
+        CHECK( move_semantics_tester<td::program>(td::program().add(td::shader(shader_type::FRAGMENT, "fragment"))).type() == ref_type::RV );
         CHECK( move_semantics_tester<td::program>(cp).type() == ref_type::LV );
-        CHECK( move_semantics_tester<td::program>(cp.add(td::shader(shader_type::FRAGMENT, "fragment"))).type() == ref_type::LV );
+        CHECK( move_semantics_tester<td::program>(cp.add(td::shader(shader_type::FRAGMENT, "fragment"))).type() == ref_type::RV );
 
     }
 
