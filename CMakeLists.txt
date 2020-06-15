@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 project(td)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     message(STATUS "GCC detected, adding compile flags")

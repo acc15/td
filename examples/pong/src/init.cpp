@@ -30,7 +30,7 @@ public:
         .add(POSITION_MVP_VERTEX)
         .add(SINGLE_COLOR_FRAGMENT);
 
-    td::vbo<> TRIANGLE_VBO = td::vbo<>()
+    td::vbo<> TRIANGLE_VBO = td::vbo()
             << 0.f << -1.f
             << -1.f << 1.f
             << 1.f << 1.f;
