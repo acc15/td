@@ -15,7 +15,21 @@ public:
 
     void parent(parent_obj* parent);
 
+    /**
+     * Called only once per-instance before attach()
+     * when object is attaching to first non-null parent.
+     */
+    virtual void init();
+
+    /**
+     * Called when object attached to parent
+     */
     virtual void attach();
+
+    /**
+     * Called when object parent is set to null.
+     * WARNING!!! NOT called in destructor
+     */
     virtual void detach();
 
 };

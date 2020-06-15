@@ -16,6 +16,10 @@ public:
         call_rec::opt_rec(_cr, call_rec::destructor(this));
     }
 
+    void init() override {
+        call_rec::opt_rec(_cr, call_rec::obj(this, "init"));
+    }
+
     void attach() override {
         call_rec::opt_rec(_cr, call_rec::obj(this, "attach"));
     }
@@ -42,7 +46,11 @@ TEST_CASE("obj") {
             REQUIRE(p.children() == std::vector<td::child_obj*>({&c}));
         }
 
-        REQUIRE_THAT(cr, has_calls_in_order({ call_rec::any_obj("attach"), call_rec::destructor() }));
+        REQUIRE_THAT(cr, has_calls_in_order({
+            call_rec::any_obj("init"),
+            call_rec::any_obj("attach"),
+            call_rec::destructor()
+        }));
         REQUIRE(p.child_count() == 0);
 
     }
@@ -63,6 +71,7 @@ TEST_CASE("obj") {
         }
 
         REQUIRE_THAT(cr, has_calls_in_order({
+            call_rec::any_obj("init"),
             call_rec::any_obj("attach"),
             call_rec::any_obj("detach"),
             call_rec::destructor()
@@ -120,8 +129,11 @@ TEST_CASE("obj") {
         }
 
         REQUIRE_THAT(cr, has_calls_in_order({
+            call_rec::obj(c1, "init"),
             call_rec::obj(c1, "attach"),
+            call_rec::obj(c2, "init"),
             call_rec::obj(c2, "attach"),
+            call_rec::obj(c3, "init"),
             call_rec::obj(c3, "attach"),
             call_rec::destructor(c3),
             call_rec::destructor(c2),
@@ -148,6 +160,7 @@ TEST_CASE("obj") {
         REQUIRE(p2.child_count() == 1);
 
         REQUIRE_THAT(cr, has_calls_in_order({
+            call_rec::obj(&c, "init"),
             call_rec::obj(&c, "attach"),
             call_rec::obj(&c, "detach"),
             call_rec::obj(&c, "attach")
@@ -200,6 +213,33 @@ TEST_CASE("obj") {
 
     }
 
+    SECTION("switching parent twice will call init() only once") {
+
+        call_rec cr;
+
+        test_obj p1;
+        test_obj p2;
+
+        test_obj c(&cr);
+
+        c.parent(&p1);
+        c.parent(nullptr);
+        c.parent(&p2);
+        c.parent(nullptr);
+
+        REQUIRE_THAT( cr, has_calls_in_order({
+            call_rec::obj(&c, "init"),
+            call_rec::obj(&c, "attach"),
+            call_rec::obj(&c, "detach"),
+            call_rec::obj(&c, "attach"),
+            call_rec::obj(&c, "detach"),
+        }));
+
+        REQUIRE(p1.child_count() == 0);
+        REQUIRE(p2.child_count() == 0);
+
+    }
+
     SECTION("children must be stored in order of addition") {
 
         test_obj p;
@@ -232,6 +272,7 @@ TEST_CASE("obj") {
 
         REQUIRE(p.child<test_obj>(0) == &c1);
         REQUIRE_THAT(cr, has_calls_in_order({
+            call_rec::obj(&c1, "init"),
             call_rec::obj(&c1, "attach")
         }));
 

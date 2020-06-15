@@ -20,23 +20,27 @@ void obj_registry::link(child_obj* c, parent_obj* p) {
             return;
         }
 
-        c->detach();
-
-        unlink_children(c, p_iter->second);
-        if (p == nullptr) {
-            _p.erase(p_iter);
-            return;
-        } else {
-            p_iter->second = p;
+        if (p_iter->second != nullptr) {
+            c->detach();
+            unlink_children(c, p_iter->second);
         }
 
+        p_iter->second = p;
+        if (p == nullptr) {
+            return;
+        }
+        _c[p].push_back(c);
+
     } else if (p != nullptr) {
+
+        // attaching first time to non-null parent
         _p[c] = p;
+        _c[p].push_back(c);
+        c->init();
+
     } else {
         return;
     }
-
-    _c[p].push_back(c);
     c->attach();
 }
 
@@ -59,8 +63,9 @@ void obj_registry::unlink(child_obj* c) {
     if (p_iter == _p.end()) {
         return;
     }
-
-    unlink_children(c, p_iter->second);
+    if (p_iter->second != nullptr) {
+        unlink_children(c, p_iter->second);
+    }
     _p.erase(p_iter);
 }
 
@@ -83,7 +88,6 @@ parent_obj* obj_registry::parent(const child_obj* c) const {
     auto p_iter = _p.find(const_cast<child_obj*>(c));
     return p_iter != _p.end() ? p_iter->second : nullptr;
 }
-
 
 void obj_registry::unlink_children(child_obj* c, parent_obj* p) {
     auto c_iter = _c.find(p);
