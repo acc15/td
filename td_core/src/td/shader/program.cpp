@@ -1,6 +1,8 @@
 #include <string>
 #include <stdexcept>
 
+#include <fmt/format.h>
+
 #include <td/shader/program.h>
 
 namespace td {
@@ -56,6 +58,11 @@ const std::vector<shader>& program::internals() const {
     return _internals;
 }
 
+program& program::attr(const char* name, GLuint index) {
+    _attrs_locs[name] = index;
+    return *this;
+}
+
 GLuint program::id() {
     if (_id != 0) {
         return _id;
@@ -66,12 +73,15 @@ GLuint program::id() {
 
     GLuint id = glCreateProgram();
     if (id == 0) {
-        // todo improve error message
-        throw std::runtime_error("Unable to create program");
+        throw std::runtime_error("Unable to create GL program object");
     }
 
     for (td::shader& s: _internals) glAttachShader(id, s.id());
     for (td::shader& s: _externals) glAttachShader(id, s.id());
+
+    for (const auto& l: _attrs_locs) {
+        glBindAttribLocation(id, l.second, l.first);
+    }
 
     glLinkProgram(id);
 
@@ -92,7 +102,7 @@ GLuint program::id() {
 
         glDeleteProgram(id);
 
-        throw std::runtime_error("Unable to link program: " + info_log);
+        throw std::runtime_error(fmt::format("Unable to link program: {}", info_log));
     }
 
     _id = id;

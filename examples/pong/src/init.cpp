@@ -1,10 +1,11 @@
 #include <iostream>
 #include <td/engine/obj.h>
 #include <td/engine/engine.h>
+#include <td/gl/gl.h>
 
 class pong_scene: public td::obj {
 public:
-    void attach() override {
+    void init() override {
         listen(td::engine::get(), &pong_scene::key_down);
         forward<td::render_event>(td::engine::get());
     }
@@ -17,7 +18,7 @@ public:
 
 class ball: public td::obj {
 public:
-    void attach() override {
+    void init() override {
         listen(parent<pong_scene>(), &ball::render);
     }
 
