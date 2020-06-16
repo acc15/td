@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdexcept>
-#include "../gl/gl.h"
+#include "gl.h"
 
 namespace td {
 

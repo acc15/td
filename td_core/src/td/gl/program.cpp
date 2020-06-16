@@ -3,7 +3,7 @@
 
 #include <fmt/format.h>
 
-#include <td/shader/program.h>
+#include <td/gl/program.h>
 
 namespace td {
 
@@ -12,10 +12,10 @@ program::program() : _id(0) {
 
 
 program::program(program&& mv) noexcept:
-    _id(mv._id),
-    _attrs_locs(mv._attrs_locs),
-    _internals(std::move(mv._internals)),
-    _externals(std::move(mv._externals)
+        _id(mv._id),
+        _bind_attrs(mv._bind_attrs),
+        _internals(std::move(mv._internals)),
+        _externals(std::move(mv._externals)
 ) {
     mv._id = 0;
 }
@@ -27,7 +27,7 @@ program::~program() {
 program& program::operator=(program&& mv) noexcept {
     rm();
     std::swap(_id, mv._id);
-    _attrs_locs = mv._attrs_locs;
+    _bind_attrs = mv._bind_attrs;
     _internals = std::move(mv._internals);
     _externals = std::move(mv._externals);
     return *this;
@@ -56,8 +56,8 @@ program&& program::fragment(const char* src) {
     return add(shader_type::FRAGMENT, src);
 }
 
-program&& program::attr(const char* name, GLuint index) {
-    _attrs_locs[name] = index;
+program&& program::bind_attr(const char* name, GLuint index) {
+    _bind_attrs[name] = index;
     return this_mv();
 }
 
@@ -86,7 +86,7 @@ GLuint program::id() {
     for (td::shader& s: _internals) glAttachShader(id, s.id());
     for (td::shader& s: _externals) glAttachShader(id, s.id());
 
-    for (const auto& l: _attrs_locs) {
+    for (const auto& l: _bind_attrs) {
         glBindAttribLocation(id, l.second, l.first);
     }
 
@@ -128,6 +128,16 @@ void program::rm() {
 program&& program::this_mv() {
     return std::move( *this );
 }
+
+const shader_var_info& program::uniform(GLuint index) const {
+
+}
+
+const shader_var_info& program::uniform(const char* name) const {
+    _locs.find(name)
+}
+const shader_var_info& program::attr(GLuint index) const;
+const shader_var_info& program::attr(const char* name) const;
 
 
 }

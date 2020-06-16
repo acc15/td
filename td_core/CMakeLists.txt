@@ -2,8 +2,8 @@ project(td_core)
 
 add_library(td_core STATIC
     include/td/core/img.h src/td/core/img.cpp
-    include/td/shader/shader.h src/td/shader/shader.cpp
-    include/td/shader/program.h src/td/shader/program.cpp
+        include/td/gl/shader.h src/td/gl/shader.cpp
+        include/td/gl/program.h src/td/gl/program.cpp
     include/td/gl/gl_type.h
     include/td/gl/bo.h
     include/td/gl/vbo_layout.h src/td/gl/vbo_layout.cpp
@@ -20,7 +20,7 @@ add_library(td_core STATIC
     include/td/engine/obj.h src/td/engine/obj.cpp
     include/td/engine/child_obj.h src/td/engine/child_obj.cpp
     include/td/engine/tag_registry.h src/td/engine/tag_registry.cpp
-    include/td/core/assert.h)
+    include/td/core/assert.h include/td/gl/shader_var_info.h src/td/gl/shader_var_info.cpp)
 
 target_link_libraries(td_core OpenGL::GL OpenGL::GLU PNG::PNG GLEW::GLEW Eigen3::Eigen fmt::fmt )
 target_include_directories(td_core PUBLIC include)
@@ -30,7 +30,7 @@ add_executable(td_core_test
     test/td/core/buf.cpp
     test/td/core/static_buf.cpp
     test/td/gl/vbo_layout.cpp
-    test/td/shader/program.cpp
+        test/td/gl/program.cpp
     test/td/event/listener.cpp
     test/td/engine/obj.cpp
     test/td/test/call_rec.h test/td/test/call_rec.cpp)

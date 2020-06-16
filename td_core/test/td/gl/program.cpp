@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include <td/shader/program.h>
+#include <td/gl/program.h>
 
 using namespace Catch::Matchers;
 using namespace td;

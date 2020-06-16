@@ -1,6 +1,6 @@
 #include <stdexcept>
 #include <fmt/format.h>
-#include <td/shader/shader.h>
+#include <td/gl/shader.h>
 
 namespace td {
 

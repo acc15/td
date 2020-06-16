@@ -3,13 +3,15 @@
 #include <iostream>
 #include <td/engine/obj.h>
 #include <td/engine/engine.h>
-#include <td/shader/program.h>
-#include <td/shader/shader.h>
+#include <td/gl/program.h>
+#include <td/gl/shader.h>
 #include <td/gl/bo.h>
 #include <td/core/assert.h>
 
 
+#include <numeric>
 #include <stdexcept>
+#include <td/gl/shader_var_info.h>
 
 namespace td {
 
@@ -97,8 +99,6 @@ private:
 
 };
 
-
-
 }
 
 class pong_res: public td::obj {
@@ -185,14 +185,171 @@ public:
 
 };
 
+std::unordered_map<GLenum, std::string> data_type_names = {
+        { GL_FLOAT, "GL_FLOAT" },
+        { GL_FLOAT_VEC2, "GL_FLOAT_VEC2" },
+        { GL_FLOAT_VEC3, "GL_FLOAT_VEC3" },
+        { GL_FLOAT_VEC4, "GL_FLOAT_VEC4" },
+        { GL_DOUBLE, "GL_DOUBLE" },
+        { GL_DOUBLE_VEC2, "GL_DOUBLE_VEC2" },
+        { GL_DOUBLE_VEC3, "GL_DOUBLE_VEC3" },
+        { GL_DOUBLE_VEC4, "GL_DOUBLE_VEC4" },
+        { GL_INT, "GL_INT" },
+        { GL_INT_VEC2, "GL_INT_VEC2" },
+        { GL_INT_VEC3, "GL_INT_VEC3" },
+        { GL_INT_VEC4, "GL_INT_VEC4" },
+        { GL_UNSIGNED_INT, "GL_UNSIGNED_INT" },
+        { GL_UNSIGNED_INT_VEC2, "GL_UNSIGNED_INT_VEC2" },
+        { GL_UNSIGNED_INT_VEC3, "GL_UNSIGNED_INT_VEC3" },
+        { GL_UNSIGNED_INT_VEC4, "GL_UNSIGNED_INT_VEC4" },
+        { GL_BOOL, "GL_BOOL" },
+        { GL_BOOL_VEC2, "GL_BOOL_VEC2" },
+        { GL_BOOL_VEC3, "GL_BOOL_VEC3" },
+        { GL_BOOL_VEC4, "GL_BOOL_VEC4" },
+        { GL_FLOAT_MAT2, "GL_FLOAT_MAT2" },
+        { GL_FLOAT_MAT3, "GL_FLOAT_MAT3" },
+        { GL_FLOAT_MAT4, "GL_FLOAT_MAT4" },
+        { GL_FLOAT_MAT2x3, "GL_FLOAT_MAT2x3" },
+        { GL_FLOAT_MAT2x4, "GL_FLOAT_MAT2x4" },
+        { GL_FLOAT_MAT3x2, "GL_FLOAT_MAT3x2" },
+        { GL_FLOAT_MAT3x4, "GL_FLOAT_MAT3x4" },
+        { GL_FLOAT_MAT4x2, "GL_FLOAT_MAT4x2" },
+        { GL_FLOAT_MAT4x3, "GL_FLOAT_MAT4x3" },
+        { GL_DOUBLE_MAT2, "GL_DOUBLE_MAT2" },
+        { GL_DOUBLE_MAT3, "GL_DOUBLE_MAT3" },
+        { GL_DOUBLE_MAT4, "GL_DOUBLE_MAT4" },
+        { GL_DOUBLE_MAT2x3, "GL_DOUBLE_MAT2x3" },
+        { GL_DOUBLE_MAT2x4, "GL_DOUBLE_MAT2x4" },
+        { GL_DOUBLE_MAT3x2, "GL_DOUBLE_MAT3x2" },
+        { GL_DOUBLE_MAT3x4, "GL_DOUBLE_MAT3x4" },
+        { GL_DOUBLE_MAT4x2, "GL_DOUBLE_MAT4x2" },
+        { GL_DOUBLE_MAT4x3, "GL_DOUBLE_MAT4x3" },
+        { GL_SAMPLER_1D, "GL_SAMPLER_1D" },
+        { GL_SAMPLER_2D, "GL_SAMPLER_2D" },
+        { GL_SAMPLER_3D, "GL_SAMPLER_3D" },
+        { GL_SAMPLER_CUBE, "GL_SAMPLER_CUBE" },
+        { GL_SAMPLER_1D_SHADOW, "GL_SAMPLER_1D_SHADOW" },
+        { GL_SAMPLER_2D_SHADOW, "GL_SAMPLER_2D_SHADOW" },
+        { GL_SAMPLER_1D_ARRAY, "GL_SAMPLER_1D_ARRAY" },
+        { GL_SAMPLER_2D_ARRAY, "GL_SAMPLER_2D_ARRAY" },
+        { GL_SAMPLER_1D_ARRAY_SHADOW, "GL_SAMPLER_1D_ARRAY_SHADOW" },
+        { GL_SAMPLER_2D_ARRAY_SHADOW, "GL_SAMPLER_2D_ARRAY_SHADOW" },
+        { GL_SAMPLER_2D_MULTISAMPLE, "GL_SAMPLER_2D_MULTISAMPLE" },
+        { GL_SAMPLER_2D_MULTISAMPLE_ARRAY, "GL_SAMPLER_2D_MULTISAMPLE_ARRAY" },
+        { GL_SAMPLER_CUBE_SHADOW, "GL_SAMPLER_CUBE_SHADOW" },
+        { GL_SAMPLER_BUFFER, "GL_SAMPLER_BUFFER" },
+        { GL_SAMPLER_2D_RECT, "GL_SAMPLER_2D_RECT" },
+        { GL_SAMPLER_2D_RECT_SHADOW, "GL_SAMPLER_2D_RECT_SHADOW" },
+        { GL_INT_SAMPLER_1D, "GL_INT_SAMPLER_1D" },
+        { GL_INT_SAMPLER_2D, "GL_INT_SAMPLER_2D" },
+        { GL_INT_SAMPLER_3D, "GL_INT_SAMPLER_3D" },
+        { GL_INT_SAMPLER_CUBE, "GL_INT_SAMPLER_CUBE" },
+        { GL_INT_SAMPLER_1D_ARRAY, "GL_INT_SAMPLER_1D_ARRAY" },
+        { GL_INT_SAMPLER_2D_ARRAY, "GL_INT_SAMPLER_2D_ARRAY" },
+        { GL_INT_SAMPLER_2D_MULTISAMPLE, "GL_INT_SAMPLER_2D_MULTISAMPLE" },
+        { GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY, "GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY" },
+        { GL_INT_SAMPLER_BUFFER, "GL_INT_SAMPLER_BUFFER" },
+        { GL_INT_SAMPLER_2D_RECT, "GL_INT_SAMPLER_2D_RECT" },
+        { GL_UNSIGNED_INT_SAMPLER_1D, "GL_UNSIGNED_INT_SAMPLER_1D" },
+        { GL_UNSIGNED_INT_SAMPLER_2D, "GL_UNSIGNED_INT_SAMPLER_2D" },
+        { GL_UNSIGNED_INT_SAMPLER_3D, "GL_UNSIGNED_INT_SAMPLER_3D" },
+        { GL_UNSIGNED_INT_SAMPLER_CUBE, "GL_UNSIGNED_INT_SAMPLER_CUBE" },
+        { GL_UNSIGNED_INT_SAMPLER_1D_ARRAY, "GL_UNSIGNED_INT_SAMPLER_1D_ARRAY" },
+        { GL_UNSIGNED_INT_SAMPLER_2D_ARRAY, "GL_UNSIGNED_INT_SAMPLER_2D_ARRAY" },
+        { GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE, "GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE" },
+        { GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY, "GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY" },
+        { GL_UNSIGNED_INT_SAMPLER_BUFFER, "GL_UNSIGNED_INT_SAMPLER_BUFFER" },
+        { GL_UNSIGNED_INT_SAMPLER_2D_RECT, "GL_UNSIGNED_INT_SAMPLER_2D_RECT" },
+        { GL_IMAGE_1D, "GL_IMAGE_1D" },
+        { GL_IMAGE_2D, "GL_IMAGE_2D" },
+        { GL_IMAGE_3D, "GL_IMAGE_3D" },
+        { GL_IMAGE_2D_RECT, "GL_IMAGE_2D_RECT" },
+        { GL_IMAGE_CUBE, "GL_IMAGE_CUBE" },
+        { GL_IMAGE_BUFFER, "GL_IMAGE_BUFFER" },
+        { GL_IMAGE_1D_ARRAY, "GL_IMAGE_1D_ARRAY" },
+        { GL_IMAGE_2D_ARRAY, "GL_IMAGE_2D_ARRAY" },
+        { GL_IMAGE_2D_MULTISAMPLE, "GL_IMAGE_2D_MULTISAMPLE" },
+        { GL_IMAGE_2D_MULTISAMPLE_ARRAY, "GL_IMAGE_2D_MULTISAMPLE_ARRAY" },
+        { GL_INT_IMAGE_1D, "GL_INT_IMAGE_1D" },
+        { GL_INT_IMAGE_2D, "GL_INT_IMAGE_2D" },
+        { GL_INT_IMAGE_3D, "GL_INT_IMAGE_3D" },
+        { GL_INT_IMAGE_2D_RECT, "GL_INT_IMAGE_2D_RECT" },
+        { GL_INT_IMAGE_CUBE, "GL_INT_IMAGE_CUBE" },
+        { GL_INT_IMAGE_BUFFER, "GL_INT_IMAGE_BUFFER" },
+        { GL_INT_IMAGE_1D_ARRAY, "GL_INT_IMAGE_1D_ARRAY" },
+        { GL_INT_IMAGE_2D_ARRAY, "GL_INT_IMAGE_2D_ARRAY" },
+        { GL_INT_IMAGE_2D_MULTISAMPLE, "GL_INT_IMAGE_2D_MULTISAMPLE" },
+        { GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY, "GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY" },
+        { GL_UNSIGNED_INT_IMAGE_1D, "GL_UNSIGNED_INT_IMAGE_1D" },
+        { GL_UNSIGNED_INT_IMAGE_2D, "GL_UNSIGNED_INT_IMAGE_2D" },
+        { GL_UNSIGNED_INT_IMAGE_3D, "GL_UNSIGNED_INT_IMAGE_3D" },
+        { GL_UNSIGNED_INT_IMAGE_2D_RECT, "GL_UNSIGNED_INT_IMAGE_2D_RECT" },
+        { GL_UNSIGNED_INT_IMAGE_CUBE, "GL_UNSIGNED_INT_IMAGE_CUBE" },
+        { GL_UNSIGNED_INT_IMAGE_BUFFER, "GL_UNSIGNED_INT_IMAGE_BUFFER" },
+        { GL_UNSIGNED_INT_IMAGE_1D_ARRAY, "GL_UNSIGNED_INT_IMAGE_1D_ARRAY" },
+        { GL_UNSIGNED_INT_IMAGE_2D_ARRAY, "GL_UNSIGNED_INT_IMAGE_2D_ARRAY" },
+        { GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE, "GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE" },
+        { GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY, "GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY" },
+        { GL_UNSIGNED_INT_ATOMIC_COUNTER, "GL_UNSIGNED_INT_ATOMIC_COUNTER" }
+};
+
+std::string shader_data_type(GLenum data_type) {
+    auto it = data_type_names.find(data_type);
+    if (it != data_type_names.end()) {
+        return it->second;
+    }
+    return "(unknown)";
+}
+
+
 void td_init() {
 
+
+    td::program test_program = td::program()
+            .add(td::shader(td::shader_type::VERTEX, R"#(
+in vec2 a_Position;
+uniform mat3 u_mvpMatrix;
+void main()
+{
+    gl_Position = vec4(u_mvpMatrix * vec3(a_Position, 1.0), 1.0);
+}
+            )#"))
+            .add(td::shader(td::shader_type::FRAGMENT, R"#(
+uniform vec4 u_Color;
+void main() {
+    gl_FragColor = u_Color;
+}
+            )#"));
+
+    GLuint p = test_program.id();
+
+    std::vector<td::shader_var_info> uniforms = td::get_active_uniforms(p);
+    std::vector<td::shader_var_info> attrs = td::get_active_attrs(p);
+
+    std::cout << "Uniform count: " << uniforms.size() << std::endl;
+    for (size_t i = 0; i < uniforms.size(); i++) {
+        std::cout
+            << "Uniform [#" << i << "] name \"" << uniforms[i].name
+            << "\" type " << shader_data_type(uniforms[i].type)
+            << " size " << uniforms[i].size
+            << std::endl;
+    }
+
+    std::cout << "Attribute count: " << attrs.size() << std::endl;
+    for (size_t i = 0; i < attrs.size(); i++) {
+        std::cout
+            << "Attribute [#" << i << "] name \"" << attrs[i].name
+            << "\" type " << shader_data_type(attrs[i].type)
+            << " size " << attrs[i].size
+            << std::endl;
+    }
+    /*
     td::engine* e = td::engine::get();
     e->title("td_pong");
     e->add(new pong_res());
     e->add((new pong_scene())
         ->add(new ball())
-    );
+    );*/
 
     /*
     td::engine& e = td::engine::get();
