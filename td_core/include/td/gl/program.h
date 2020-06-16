@@ -29,10 +29,15 @@ public:
     const std::vector<std::reference_wrapper<shader>>& externals() const;
     const std::vector<shader>& internals() const;
 
-    const shader_var_info& uniform(GLuint index) const;
+    /*
+    GLint uniform_location(const char* name) const;
+    GLuint attribute_location(const char* name) const;
+
+    const shader_var_info& uniform(GLint location) const;
     const shader_var_info& uniform(const char* name) const;
-    const shader_var_info& attr(GLuint index) const;
-    const shader_var_info& attr(const char* name) const;
+    const shader_var_info& attribute(GLuint index) const;
+    const shader_var_info& attribute(const char* name) const;
+     */
 
     GLuint id();
     void rm();
@@ -43,10 +48,12 @@ protected:
 
     GLuint _id;
 
-    std::unordered_map<const char*, GLuint> _uniform_locs;
+    /*
+    std::unordered_map<const char*, GLint> _uniform_locs;
     std::unordered_map<const char*, GLuint> _attr_locs;
-    std::unordered_map<GLuint, shader_var_info> _uniforms;
+    std::unordered_map<GLint, shader_var_info> _uniforms;
     std::unordered_map<GLuint, shader_var_info> _attrs;
+     */
 
     std::unordered_map<const char*, GLuint> _bind_attrs;
     std::vector<shader> _internals;

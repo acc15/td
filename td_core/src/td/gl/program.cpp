@@ -129,15 +129,4 @@ program&& program::this_mv() {
     return std::move( *this );
 }
 
-const shader_var_info& program::uniform(GLuint index) const {
-
-}
-
-const shader_var_info& program::uniform(const char* name) const {
-    _locs.find(name)
-}
-const shader_var_info& program::attr(GLuint index) const;
-const shader_var_info& program::attr(const char* name) const;
-
-
 }

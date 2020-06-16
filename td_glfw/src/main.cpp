@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include <td/glfw/glfw_engine.h>
+#include <td/gl/debug.h>
 
 extern void td_init();
 
@@ -36,26 +37,36 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 }
 
-bool init_glew() {
+bool init_glew(const std::vector<std::string>& args) {
     const GLenum glew_ok = glewInit();
     if (glew_ok != GLEW_OK) {
         std::cerr << "Unable to initialize GLEW: " << glewGetErrorString(glew_ok) << std::endl;
         return false;
     }
-    std::cout << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
+    if (td::is_gl_debug_enabled(args)) {
+        std::cout << "GLEW version: " << glewGetString(GLEW_VERSION) << std::endl
+                  << "GLFW version: " << glfwGetVersionString() << std::endl
+                  << "OpenGL version: " << glGetString(GL_VERSION) << std::endl
+                  << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl
+                  << "OpenGL SL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl
+                  << "OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
+    }
     return true;
 }
 
-int run_glfw_window(GLFWwindow* window) {
+int run_glfw_window(GLFWwindow* window, const std::vector<std::string>& args) {
 
     glfwMakeContextCurrent(window);
-    if (!init_glew()) {
+    if (!init_glew(args)) {
         return -1;
     }
 
+
     try {
 
-        td::glfw_engine e(window);
+        td::glfw_engine e(window, args);
+        td::activate_gl_debug();
+
         e.activation({ td::event_type::KEY_DOWN, td::event_type::KEY_UP, td::event_type::KEY_REPEAT }, [window](bool active) -> void {
             glfwSetKeyCallback(window, active ? key_callback : nullptr);
         });
@@ -89,14 +100,17 @@ int run_glfw_window(GLFWwindow* window) {
 }
 
 
-int run_glfw() {
+int run_glfw(const std::vector<std::string>& args) {
+
+    // glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+
     GLFWwindow* window = glfwCreateWindow(640, 480, "td", nullptr, nullptr);
     if (!window) {
         return -1;
     }
 
-    int ret = run_glfw_window(window);
+    int ret = run_glfw_window(window, args);
     glfwDestroyWindow(window);
     return ret;
 }
@@ -105,13 +119,16 @@ static void glfw_error_callback(int, const char* description) {
     std::cerr << "GLFW error: " << description << std::endl;
 }
 
-int main() {
+int main(int argc, char** argv) {
+
+    std::vector<std::string> args(argv, argv + argc);
+
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit()) {
         return -1;
     }
 
-    int ret = run_glfw();
+    int ret = run_glfw(args);
     glfwTerminate();
     return ret;
 }
