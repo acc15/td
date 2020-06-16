@@ -11,7 +11,6 @@
 
 #include <numeric>
 #include <stdexcept>
-#include <td/gl/shader_var_info.h>
 
 namespace td {
 
@@ -192,7 +191,7 @@ void td_init() {
             .add(td::shader(td::shader_type::VERTEX, R"#(
 #version 330
 
-in vec2 b_Position;
+layout(location = 5) in vec2 b_Position;
 in vec2 a_Position;
 uniform mat3 u_mvpMatrix;
 
@@ -211,18 +210,10 @@ void main() {
 }
             )#"));
 
-    GLuint p = test_program.id();
+    test_program.id();
 
-    std::vector<td::shader_var_info> uniforms = td::get_active_uniforms(p);
-    std::vector<td::shader_var_info> attrs = td::get_active_attrs(p);
-
-    GLuint bb;
-    glGenBuffers(-1, &bb);
-
-    std::cout << "u_mvpMatrix location: " << glGetUniformLocation(p, "u_mvpMatrix") << std::endl;
-    std::cout << "u_Color location: " << glGetUniformLocation(p, "u_Color") << std::endl;
-    std::cout << "a_Position location: " << glGetAttribLocation(p, "a_Position") << std::endl;
-    std::cout << "b_Position location: " << glGetAttribLocation(p, "b_Position") << std::endl;
+    const std::vector<td::program::var_info>& uniforms = test_program.uniforms();
+    const std::vector<td::program::var_info>& attrs = test_program.attributes();
 
     std::cout << "Uniform count: " << uniforms.size() << std::endl;
     for (size_t i = 0; i < uniforms.size(); i++) {
@@ -230,6 +221,7 @@ void main() {
             << "Uniform [#" << i << "] name \"" << uniforms[i].name
             << "\" type " << td::gl_enum_string(uniforms[i].type)
             << " size " << uniforms[i].size
+            << " location " << uniforms[i].location
             << std::endl;
     }
 
@@ -239,6 +231,7 @@ void main() {
             << "Attribute [#" << i << "] name \"" << attrs[i].name
             << "\" type " << td::gl_enum_string(attrs[i].type)
             << " size " << attrs[i].size
+            << " location " << attrs[i].location
             << std::endl;
     }
     /*

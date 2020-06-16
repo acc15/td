@@ -15,8 +15,14 @@ program::program(program&& mv) noexcept:
         _id(mv._id),
         _bind_attrs(mv._bind_attrs),
         _internals(std::move(mv._internals)),
-        _externals(std::move(mv._externals)
-) {
+        _externals(std::move(mv._externals)),
+        _uniform_locs(std::move(mv._uniform_locs)),
+        _attr_locs(std::move(mv._attr_locs)),
+        _uniforms(std::move(mv._uniforms)),
+        _attrs(std::move(mv._attrs)),
+        _uniform_map(std::move(mv._uniform_map)),
+        _attr_map(std::move(mv._attr_map))
+{
     mv._id = 0;
 }
 
@@ -30,6 +36,12 @@ program& program::operator=(program&& mv) noexcept {
     _bind_attrs = mv._bind_attrs;
     _internals = std::move(mv._internals);
     _externals = std::move(mv._externals);
+    _uniform_locs = std::move(mv._uniform_locs);
+    _attr_locs = std::move(mv._attr_locs);
+    _uniforms = std::move(mv._uniforms);
+    _attrs = std::move(mv._attrs);
+    _attr_map = std::move(mv._attr_map);
+    _uniform_map = std::move(mv._uniform_map);
     return *this;
 }
 
@@ -112,8 +124,60 @@ GLuint program::id() {
         throw std::runtime_error(fmt::format("Unable to link program: {}", info_log));
     }
 
+    populate_uniforms(id);
+    populate_attributes(id);
+
     _id = id;
     return _id;
+}
+
+
+GLint program::uniform_location(const char* name) const {
+    auto iter = _uniform_locs.find(name);
+    if (iter == _uniform_locs.end()) {
+        throw std::invalid_argument(fmt::format("unknown uniform name: {}", name));
+    }
+    return iter->second;
+}
+
+GLuint program::attribute_location(const char* name) const {
+    auto iter = _attr_locs.find(name);
+    if (iter == _attr_locs.end()) {
+        throw std::invalid_argument(fmt::format("unknown attribute name: {}", name));
+    }
+    return iter->second;
+}
+
+const program::var_info& program::uniform(GLint location) const {
+    auto iter = _uniform_map.find(location);
+    if (iter == _uniform_map.end()) {
+        throw std::invalid_argument(fmt::format("unknown uniform location: {}", location));
+    }
+    return *iter->second;
+}
+
+const program::var_info& program::uniform(const char* name) const {
+    return uniform(uniform_location(name));
+}
+
+const program::var_info& program::attribute(GLuint index) const {
+    auto iter = _attr_map.find(index);
+    if (iter == _attr_map.end()) {
+        throw std::invalid_argument(fmt::format("unknown attribute index: {}", index));
+    }
+    return *iter->second;
+}
+
+const program::var_info& program::attribute(const char* name) const {
+    return attribute(attribute_location(name));
+}
+
+const std::vector<program::var_info>& program::uniforms() const {
+    return _uniforms;
+}
+
+const std::vector<program::var_info>& program::attributes() const {
+    return _attrs;
 }
 
 void program::rm() {
@@ -123,10 +187,63 @@ void program::rm() {
 
     glDeleteProgram(_id);
     _id = 0;
+
+    _uniform_map.clear();
+    _attr_map.clear();
+    _uniforms.clear();
+    _attrs.clear();
+    _uniform_locs.clear();
+    _attr_locs.clear();
+
 }
 
 program&& program::this_mv() {
     return std::move( *this );
+}
+
+void program::populate_uniforms(GLuint id) {
+    GLint uniform_count, uniform_max_length;
+    glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &uniform_count);
+    glGetProgramiv(id, GL_ACTIVE_UNIFORM_MAX_LENGTH, &uniform_max_length);
+    for (size_t i = 0; i < static_cast<size_t>(uniform_count); i++) {
+
+        std::string name(uniform_max_length, '\0');
+        GLsizei uniform_length;
+        GLint size;
+        GLenum type;
+
+        glGetActiveUniform(id, i, uniform_max_length, &uniform_length, &size, &type, name.data());
+        name.resize(uniform_length);
+
+        GLint location = glGetUniformLocation(id, name.data());
+
+        auto loc_iter = _uniform_locs.insert(std::make_pair(std::move(name), location)).first;
+        _uniforms.push_back({ location, i, type, size, loc_iter->first });
+        _uniform_map[location] = &_uniforms.back();
+    }
+}
+
+void program::populate_attributes(GLuint id) {
+    GLint attribute_count, attribute_max_length;
+    glGetProgramiv(id, GL_ACTIVE_ATTRIBUTES, &attribute_count);
+    glGetProgramiv(id, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &attribute_max_length);
+    for (size_t i = 0; i < static_cast<size_t>(attribute_count); i++) {
+
+        std::string name(attribute_max_length, '\0');
+        GLsizei attr_length;
+        GLint size;
+        GLenum type;
+
+        glGetActiveAttrib(id, i, attribute_max_length, &attr_length, &size, &type, name.data());
+        name.resize(attr_length);
+
+        GLint location = glGetAttribLocation(id, name.data());
+
+        auto loc_iter = _attr_locs.insert(std::make_pair(std::move(name), location)).first;
+        _attrs.push_back({ location, i, type, size, loc_iter->first });
+        _attr_map[location] = &_attrs.back();
+
+    }
 }
 
 }
