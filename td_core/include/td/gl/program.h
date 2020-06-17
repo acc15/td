@@ -6,34 +6,13 @@
 
 #include "gl.h"
 #include "shader.h"
+#include "sl_var_ref.h"
+#include "sl_var.h"
 
 namespace td {
 
 class program {
 public:
-
-    struct var_info {
-        GLint location;
-        GLuint index;
-        GLenum type;
-        GLint size;
-        const std::string& name;
-    };
-
-    class var_ref {
-    public:
-        var_ref(GLint location);
-        var_ref(const char* name);
-
-        GLint uniform_location(const program& p);
-        GLint attribute_location(const program& p);
-
-    private:
-        GLint _location;
-        const char* _name;
-
-    };
-
     program();
     ~program();
 
@@ -52,10 +31,10 @@ public:
 
     GLint uniform_location(const char* name) const;
     GLuint attribute_location(const char* name) const;
-    const var_info& uniform(var_ref ref) const;
-    const var_info& attribute(var_ref ref) const;
-    const std::vector<var_info>& uniforms() const;
-    const std::vector<var_info>& attributes() const;
+    const sl_var& uniform(sl_var_ref ref) const;
+    const sl_var& attribute(sl_var_ref ref) const;
+    const std::vector<sl_var>& uniforms() const;
+    const std::vector<sl_var>& attributes() const;
 
     GLuint id();
     void rm();
@@ -71,10 +50,10 @@ protected:
 
     std::unordered_map<std::string, GLint> _uniform_locs;
     std::unordered_map<std::string, GLint> _attr_locs;
-    std::vector<var_info> _uniforms;
-    std::vector<var_info> _attrs;
-    std::unordered_map<GLint, var_info*> _uniform_map;
-    std::unordered_map<GLint, var_info*> _attr_map;
+    std::vector<sl_var> _uniforms;
+    std::vector<sl_var> _attrs;
+    std::unordered_map<GLint, sl_var*> _uniform_map;
+    std::unordered_map<GLint, sl_var*> _attr_map;
 
     std::unordered_map<const char*, GLuint> _bind_attrs;
     std::vector<shader> _internals;

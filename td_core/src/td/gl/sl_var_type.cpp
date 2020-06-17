@@ -3,6 +3,9 @@
 
 namespace td {
 
+sl_var_type::sl_var_type(GLenum value): _value(value) {
+}
+
 bool sl_var_type::is_float_matrix() const {
     switch (_value) {
         case GL_FLOAT_MAT2:
@@ -97,7 +100,11 @@ const char* sl_var_type::name() const {
     return gl_enum_string(_value);
 }
 
-GLenum sl_var_type::type() const {
+GLenum sl_var_type::value() const {
+    return _value;
+}
+
+sl_var_type::operator GLenum() const {
     return _value;
 }
 

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <stdexcept>
+#include <fmt/format.h>
+
 #include "gl.h"
 
 namespace td {
@@ -14,7 +16,7 @@ inline std::string shader_type_str(shader_type t) {
     switch (t) {
     case shader_type::VERTEX: return "VERTEX";
     case shader_type::FRAGMENT: return "FRAGMENT";
-    default: return "UNKNOWN (numeric " + std::to_string(static_cast<int>(t));
+    default: return fmt::format("UNKNOWN (numeric {})", t);
     }
 }
 

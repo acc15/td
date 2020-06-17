@@ -4,67 +4,12 @@
 #include <td/engine/obj.h>
 #include <td/engine/engine.h>
 #include <td/gl/program.h>
-#include <td/gl/shader.h>
 #include <td/gl/bo.h>
 #include <td/gl/enum.h>
 #include <td/gl/drawer.h>
 
-
 #include <numeric>
 #include <stdexcept>
-
-namespace td {
-
-struct uniform_resolver {
-    inline static GLuint resolve(GLuint p, const char* name) {
-        return glGetUniformLocation(p, name);
-    }
-};
-
-struct attr_resolver {
-    inline static GLuint resolve(GLuint p, const char* name) {
-        return glGetAttribLocation(p, name);
-    }
-};
-
-template <typename Resolver>
-class program_ref {
-public:
-
-    program_ref(GLint location): _name(nullptr), _location(location) {
-    }
-
-    program_ref(const char* name): _name(name), _location(-1) {
-    }
-
-    GLint location(GLuint p) {
-        if (_location != -1) {
-            return _location;
-        }
-        if (_name != nullptr) {
-            _location = Resolver::resolve(p, _name);
-        }
-        if (_location == -1) {
-            throw std::invalid_argument(_name != nullptr
-                ? fmt::format("Invalid uniform name: {}, location: {}", _name, _location)
-                : fmt::format("Invalid uniform location {}", _location));
-        }
-        return _location;
-    }
-
-private:
-
-    const char* _name;
-    GLint _location;
-
-};
-
-typedef program_ref<uniform_resolver> uniform_ref;
-typedef program_ref<attr_resolver> attribute_ref;
-
-
-
-}
 
 class pong_res: public td::obj {
 public:
@@ -178,8 +123,11 @@ void main() {
 
     test_program.id();
 
-    const std::vector<td::program::var_info>& uniforms = test_program.uniforms();
-    const std::vector<td::program::var_info>& attrs = test_program.attributes();
+    td::drawer(test_program)
+        .uniform("u_mvpMatrix", { 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f });
+
+    const std::vector<td::sl_var>& uniforms = test_program.uniforms();
+    const std::vector<td::sl_var>& attrs = test_program.attributes();
 
     std::cout << "Uniform count: " << uniforms.size() << std::endl;
     for (size_t i = 0; i < uniforms.size(); i++) {
@@ -205,7 +153,9 @@ void main() {
 
     GLfloat buf[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-    const td::program::var_info& mvpMatrix = test_program.uniform("u_mvpMatrix");
+    const td::sl_var& mvpMatrix = test_program.uniform("u_mvpMatrix");
+
+
     /*
     td::generic_element_applier<td::uniform_applier<GLfloat>>::apply(
             buf,

@@ -148,7 +148,7 @@ GLuint program::attribute_location(const char* name) const {
     return iter->second;
 }
 
-const program::var_info& program::uniform(var_ref ref) const {
+const sl_var& program::uniform(sl_var_ref ref) const {
     GLint loc = ref.uniform_location(*this);
     auto iter = _uniform_map.find(loc);
     if (iter == _uniform_map.end()) {
@@ -157,7 +157,7 @@ const program::var_info& program::uniform(var_ref ref) const {
     return *iter->second;
 }
 
-const program::var_info& program::attribute(var_ref ref) const {
+const sl_var& program::attribute(sl_var_ref ref) const {
     GLint loc = ref.attribute_location(*this);
     auto iter = _attr_map.find(loc);
     if (iter == _attr_map.end()) {
@@ -166,11 +166,11 @@ const program::var_info& program::attribute(var_ref ref) const {
     return *iter->second;
 }
 
-const std::vector<program::var_info>& program::uniforms() const {
+const std::vector<sl_var>& program::uniforms() const {
     return _uniforms;
 }
 
-const std::vector<program::var_info>& program::attributes() const {
+const std::vector<sl_var>& program::attributes() const {
     return _attrs;
 }
 
@@ -241,24 +241,6 @@ void program::populate_attributes(GLuint id) {
     }
 }
 
-program::var_ref::var_ref(GLint location): _location(location), _name(nullptr) {
-}
 
-program::var_ref::var_ref(const char* name): _location(-1), _name(name) {
-}
-
-GLint program::var_ref::uniform_location(const program& p) {
-    if (_location == -1 && _name != nullptr) {
-        _location = p.uniform_location(_name);
-    }
-    return _location;
-}
-
-GLint program::var_ref::attribute_location(const program& p) {
-    if (_location == -1 && _name != nullptr) {
-        _location = p.attribute_location(_name);
-    }
-    return _location;
-}
 
 }
