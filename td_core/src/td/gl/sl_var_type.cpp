@@ -1,9 +1,10 @@
-#include <td/gl/sl_data_type.h>
+#include <td/gl/sl_var_type.h>
+#include <td/gl/enum.h>
 
 namespace td {
 
-bool is_float_matrix_type(GLenum type) {
-    switch (type) {
+bool sl_var_type::is_float_matrix() const {
+    switch (_value) {
         case GL_FLOAT_MAT2:
         case GL_FLOAT_MAT3:
         case GL_FLOAT_MAT4:
@@ -19,8 +20,8 @@ bool is_float_matrix_type(GLenum type) {
     }
 }
 
-bool is_double_matrix_type(GLenum type) {
-    switch (type) {
+bool sl_var_type::is_double_matrix() const {
+    switch (_value) {
         case GL_DOUBLE_MAT2:
         case GL_DOUBLE_MAT3:
         case GL_DOUBLE_MAT4:
@@ -36,8 +37,8 @@ bool is_double_matrix_type(GLenum type) {
     }
 }
 
-size_t min_element_count(GLenum type) {
-    switch (type) {
+size_t sl_var_type::min_element_count() const {
+    switch (_value) {
         case GL_DOUBLE_VEC2:
         case GL_FLOAT_VEC2:
         case GL_INT_VEC2:
@@ -90,6 +91,14 @@ size_t min_element_count(GLenum type) {
         default:
             return 1;
     }
+}
+
+const char* sl_var_type::name() const {
+    return gl_enum_string(_value);
+}
+
+GLenum sl_var_type::type() const {
+    return _value;
 }
 
 }

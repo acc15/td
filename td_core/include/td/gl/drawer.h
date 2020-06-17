@@ -6,7 +6,11 @@
 #include <td/gl/sl_data_type.h>
 #include <td/gl/enum.h>
 
+#include <td/util/plain_arithmetic_container.h>
+
 namespace td {
+
+
 
 std::invalid_argument sl_invalid_type(const char* c_type, GLenum gl_type) {
     const char* gl_type_string = gl_enum_string(gl_type);
@@ -14,18 +18,17 @@ std::invalid_argument sl_invalid_type(const char* c_type, GLenum gl_type) {
 }
 
 template <typename Applier>
-struct sl_generic_ptr_applier {
-    static void apply(const typename Applier::value_type* e_ptr, size_t e_count, GLint sl_loc, GLenum sl_type, GLsizei sl_array_len) {
-        size_t sl_count = min_element_count(sl_type);
-        size_t required_count = sl_count * sl_array_len;
-        if (e_count < required_count) {
-            throw std::invalid_argument(fmt::format(
-                    "invalid input element count {}, required {} for {} type with size {}",
-                    e_count, required_count, gl_enum_string(sl_type), sl_count));
-        }
-        Applier::apply(e_ptr, sl_loc, sl_type, sl_array_len, sl_count);
+void sl_apply_value(const td::program& p, const td::program::var_info& var, const plain_arithmetic_container_info<typename Applier::type>& value) {
+    size_t sl_count = min_element_count(var.type);
+    size_t required_count = sl_count * var.size;
+    if (value.count < required_count) {
+        throw std::invalid_argument(fmt::format(
+                "invalid input element count {}, required {} for {} type with size {}",
+                value.count, required_count, gl_enum_string(var.type), sl_count));
     }
-};
+    Applier::apply(e_ptr, sl_loc, sl_type, sl_array_len, sl_count);
+}
+
 
 template <typename T>
 struct sl_uniform_applier {
@@ -35,11 +38,11 @@ template <>
 struct sl_uniform_applier<GLuint> {
     typedef GLuint value_type;
 
-    static void apply_uniform(const GLuint* e_ptr, GLint sl_loc, GLenum sl_type, GLsizei sl_array_len, size_t sl_count) {
-        if (is_float_matrix_type(sl_type) || is_double_matrix_type(sl_type)) {
-            throw sl_invalid_type("GLuint", sl_type);
+    static void apply(const td::program& p, const td::program::var_info& var, const plain_arithmetic_container_info<GLuint>& value) {
+        if (is_float_matrix_type(var.type) || is_double_matrix_type(var.type)) {
+            throw sl_invalid_type("GLuint", var.type);
         }
-        switch (sl_count) {
+        switch (var) {
             case 1:
                 if (sl_array_len == 1) {
                     glUniform1ui(sl_loc, e_ptr[0]);
@@ -294,24 +297,29 @@ public:
 
     template <typename T>
     drawer& uniform(program::var_ref ref, const T& value) {
-        glUniform2d(ref.uniform_location(_p), 0.0, 0.0);
+        // typedef plain_arithmetic_container_caster<T> caster;
+        // typedef sl_uniform_applier< typename caster::type > applier;
+        // applier::apply( *this, ref, caster::apply(value) );
         return *this;
     }
 
-    /* overloads for uniform 2, 3 and 4
+    /* overloads for uniform 2, 3 and 4 */
+    template <typename T>
+    drawer& uniform(program::var_ref ref, const T& v1, const T& v2) {
+        return uniform( ref, std::array<T, 2>({ v1, v2 }) );
+    }
 
     template <typename T>
-    drawer& uniform(program::var_ref ref, const T& v1, const T& v2);
+    drawer& uniform(program::var_ref ref, const T& v1, const T& v2, const T& v3) {
+        return uniform( ref, std::array<T, 3>({ v1, v2, v3 }) );
+    }
 
     template <typename T>
-    drawer& uniform(program::var_ref ref, const T& v1, const T& v2, const T& v3);
+    drawer& uniform(program::var_ref ref, const T& v1, const T& v2, const T& v3, const T& v4) {
+        return uniform( ref, std::array<T, 4>({ v1, v2, v3 }) );
+    }
 
-    template <typename T>
-    drawer& uniform(program::var_ref ref, const T& v1, const T& v2, const T& v3, const T& v4);
-      */
-
-
-
+    /*
     template <typename T>
     drawer& attribute(program::var_ref name, const std::initializer_list<T>& value) {
         return attr(name, std::vector<T>(value));
@@ -321,7 +329,7 @@ public:
     drawer& attribute(program::var_ref name, const T& value) {
         glVertexAttrib1d(name.attribute_location(_p), 0.0);
         return *this;
-    }
+    }*/
 
 private:
     program& _p;

@@ -44,8 +44,9 @@ template <typename T>
 struct plain_arithmetic_container_caster {
 
     typedef typename plain_arithmetic_container<T>::type type;
+    typedef plain_arithmetic_container_info<type> info_type;
 
-    static plain_arithmetic_container_info<type> apply(const T& value) {
+    static info_type apply(const T& value) {
         return {
             reinterpret_cast<const type*>(&value),
             sizeof(T) / sizeof(type)
@@ -57,8 +58,9 @@ template <typename T>
 struct plain_arithmetic_container_caster<std::vector<T>> {
 
     typedef typename plain_arithmetic_container<typename std::vector<T>::value_type>::type type;
+    typedef plain_arithmetic_container_info<type> info_type;
 
-    static plain_arithmetic_container_info<type> apply(const std::vector<T>& value) {
+    static info_type apply(const std::vector<T>& value) {
         return {
             reinterpret_cast<const type*>(value.data()),
             value.size() * (sizeof(T) / sizeof(type))
