@@ -206,13 +206,14 @@ void main() {
     GLfloat buf[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
     const td::program::var_info& mvpMatrix = test_program.uniform("u_mvpMatrix");
+    /*
     td::generic_element_applier<td::uniform_applier<GLfloat>>::apply(
             buf,
             sizeof(buf) / sizeof(typeof(buf[0])),
             mvpMatrix.location,
             mvpMatrix.type,
             mvpMatrix.size
-    );
+    );*/
 
     /*
     td::engine* e = td::engine::get();

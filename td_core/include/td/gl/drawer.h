@@ -8,15 +8,14 @@
 
 namespace td {
 
-
-std::invalid_argument invalid_type(const char* c_type, GLenum gl_type) {
+std::invalid_argument sl_invalid_type(const char* c_type, GLenum gl_type) {
     const char* gl_type_string = gl_enum_string(gl_type);
     return std::invalid_argument(fmt::format("invalid input type {} for shader type {}", c_type, gl_type_string));
 }
 
 template <typename Applier>
-struct generic_element_applier {
-    static void apply(typename Applier::value_type* e_ptr, size_t e_count, GLint sl_loc, GLenum sl_type, GLsizei sl_array_len) {
+struct sl_generic_ptr_applier {
+    static void apply(const typename Applier::value_type* e_ptr, size_t e_count, GLint sl_loc, GLenum sl_type, GLsizei sl_array_len) {
         size_t sl_count = min_element_count(sl_type);
         size_t required_count = sl_count * sl_array_len;
         if (e_count < required_count) {
@@ -29,16 +28,16 @@ struct generic_element_applier {
 };
 
 template <typename T>
-struct uniform_applier {
+struct sl_uniform_applier {
 };
 
 template <>
-struct uniform_applier<GLuint> {
+struct sl_uniform_applier<GLuint> {
     typedef GLuint value_type;
 
-    static void apply(GLuint* e_ptr, GLint sl_loc, GLenum sl_type, GLsizei sl_array_len, size_t sl_count) {
+    static void apply_uniform(const GLuint* e_ptr, GLint sl_loc, GLenum sl_type, GLsizei sl_array_len, size_t sl_count) {
         if (is_float_matrix_type(sl_type) || is_double_matrix_type(sl_type)) {
-            throw invalid_type("GLuint", sl_type);
+            throw sl_invalid_type("GLuint", sl_type);
         }
         switch (sl_count) {
             case 1:
@@ -74,18 +73,18 @@ struct uniform_applier<GLuint> {
                 break;
 
             default:
-                throw invalid_type("GLuint", sl_type);
+                throw sl_invalid_type("GLuint", sl_type);
         }
     }
 };
 
 template <>
-struct uniform_applier<GLint> {
+struct sl_uniform_applier<GLint> {
     typedef GLint value_type;
 
-    static void apply(GLint* e_ptr, GLint sl_loc, GLenum sl_type, GLsizei sl_array_len, size_t sl_count) {
+    static void apply(const GLint* e_ptr, GLint sl_loc, GLenum sl_type, GLsizei sl_array_len, size_t sl_count) {
         if (is_float_matrix_type(sl_type) || is_double_matrix_type(sl_type)) {
-            throw invalid_type("GLint", sl_type);
+            throw sl_invalid_type("GLint", sl_type);
         }
         switch (sl_count) {
             case 1:
@@ -121,18 +120,18 @@ struct uniform_applier<GLint> {
                 break;
 
             default:
-                throw invalid_type("GLint", sl_type);
+                throw sl_invalid_type("GLint", sl_type);
         }
     }
 };
 
 template <>
-struct uniform_applier<GLfloat> {
+struct sl_uniform_applier<GLfloat> {
     typedef GLfloat value_type;
 
-    static void apply(GLfloat* e_ptr, GLint sl_loc, GLenum sl_type, GLsizei sl_array_len, size_t sl_count) {
+    static void apply(const GLfloat* e_ptr, GLint sl_loc, GLenum sl_type, GLsizei sl_array_len, size_t sl_count) {
         if (is_double_matrix_type(sl_type)) {
-            throw invalid_type("GLfloat", sl_type);
+            throw sl_invalid_type("GLfloat", sl_type);
         }
         switch (sl_type) {
             case GL_FLOAT_MAT2:
@@ -197,18 +196,18 @@ struct uniform_applier<GLfloat> {
                 break;
 
             default:
-                throw invalid_type("GLfloat", sl_type);
+                throw sl_invalid_type("GLfloat", sl_type);
         }
     }
 };
 
 template <>
-struct uniform_applier<GLdouble> {
+struct sl_uniform_applier<GLdouble> {
     typedef GLdouble value_type;
 
-    static void apply(GLdouble* e_ptr, GLint sl_loc, GLenum sl_type, GLsizei sl_array_len, size_t sl_count) {
+    static void apply(const GLdouble* e_ptr, GLint sl_loc, GLenum sl_type, GLsizei sl_array_len, size_t sl_count) {
         if (is_float_matrix_type(sl_type)) {
-            throw invalid_type("GLdouble", sl_type);
+            throw sl_invalid_type("GLdouble", sl_type);
         }
         switch (sl_type) {
             case GL_FLOAT_MAT2:
@@ -273,7 +272,7 @@ struct uniform_applier<GLdouble> {
                 break;
 
             default:
-                throw invalid_type("GLdouble", sl_type);
+                throw sl_invalid_type("GLdouble", sl_type);
         }
     }
 };
