@@ -148,28 +148,22 @@ GLuint program::attribute_location(const char* name) const {
     return iter->second;
 }
 
-const program::var_info& program::uniform(GLint location) const {
-    auto iter = _uniform_map.find(location);
+const program::var_info& program::uniform(var_ref ref) const {
+    GLint loc = ref.uniform_location(*this);
+    auto iter = _uniform_map.find(loc);
     if (iter == _uniform_map.end()) {
-        throw std::invalid_argument(fmt::format("unknown uniform location: {}", location));
+        throw std::invalid_argument(fmt::format("unknown uniform location: {}", loc));
     }
     return *iter->second;
 }
 
-const program::var_info& program::uniform(const char* name) const {
-    return uniform(uniform_location(name));
-}
-
-const program::var_info& program::attribute(GLuint index) const {
-    auto iter = _attr_map.find(index);
+const program::var_info& program::attribute(var_ref ref) const {
+    GLint loc = ref.attribute_location(*this);
+    auto iter = _attr_map.find(loc);
     if (iter == _attr_map.end()) {
-        throw std::invalid_argument(fmt::format("unknown attribute index: {}", index));
+        throw std::invalid_argument(fmt::format("unknown attribute location: {}", loc));
     }
     return *iter->second;
-}
-
-const program::var_info& program::attribute(const char* name) const {
-    return attribute(attribute_location(name));
 }
 
 const std::vector<program::var_info>& program::uniforms() const {
@@ -244,6 +238,26 @@ void program::populate_attributes(GLuint id) {
         _attr_map[location] = &_attrs.back();
 
     }
+}
+
+program::var_ref::var_ref(GLint location): _location(location), _name(nullptr) {
+}
+
+program::var_ref::var_ref(const char* name): _location(-1), _name(name) {
+}
+
+GLint program::var_ref::uniform_location(const program& p) {
+    if (_location == -1 && _name != nullptr) {
+        _location = p.uniform_location(_name);
+    }
+    return _location;
+}
+
+GLint program::var_ref::attribute_location(const program& p) {
+    if (_location == -1 && _name != nullptr) {
+        _location = p.attribute_location(_name);
+    }
+    return _location;
 }
 
 }

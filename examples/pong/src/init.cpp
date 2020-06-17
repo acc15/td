@@ -62,41 +62,6 @@ typedef program_ref<uniform_resolver> uniform_ref;
 typedef program_ref<attr_resolver> attribute_ref;
 
 
-class drawer {
-public:
-
-    // only external references accepted
-    // this is intentional to avoid compiling program every draw operation
-    drawer(td::program& p): _p(p.id()) {
-        glUseProgram(_p);
-    }
-
-    template <typename T>
-    drawer& uniform(uniform_ref name, const std::initializer_list<T>& value) {
-        return uniform(name, std::vector<T>(value));
-    }
-
-    template <typename T>
-    drawer& uniform(uniform_ref name, const T& value) {
-        glUniform2d(name.location(_p), 0.0, 0.0);
-        return *this;
-    }
-
-    template <typename T>
-    drawer& attr(attribute_ref name, const std::initializer_list<T>& value) {
-        return attr(name, std::vector<T>(value));
-    }
-
-    template <typename T>
-    drawer& attr(attribute_ref name, const T& value) {
-        glVertexAttrib1d(name.location(_p), 0.0);
-        return *this;
-    }
-
-private:
-    GLuint _p;
-
-};
 
 }
 

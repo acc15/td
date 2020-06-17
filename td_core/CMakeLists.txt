@@ -22,7 +22,7 @@ add_library(td_core STATIC
     include/td/engine/tag_registry.h src/td/engine/tag_registry.cpp
     include/td/core/assert.h
         include/td/gl/debug.h src/td/gl/debug.cpp
-    include/td/gl/enum.h src/td/gl/enum.cpp)
+    include/td/gl/enum.h src/td/gl/enum.cpp include/td/gl/drawer.h include/td/gl/sl_data_type.h src/td/gl/sl_data_type.cpp)
 
 target_link_libraries(td_core OpenGL::GL OpenGL::GLU PNG::PNG GLEW::GLEW Eigen3::Eigen fmt::fmt )
 target_include_directories(td_core PUBLIC include)

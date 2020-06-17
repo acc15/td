@@ -20,6 +20,20 @@ public:
         const std::string& name;
     };
 
+    class var_ref {
+    public:
+        var_ref(GLint location);
+        var_ref(const char* name);
+
+        GLint uniform_location(const program& p);
+        GLint attribute_location(const program& p);
+
+    private:
+        GLint _location;
+        const char* _name;
+
+    };
+
     program();
     ~program();
 
@@ -38,10 +52,8 @@ public:
 
     GLint uniform_location(const char* name) const;
     GLuint attribute_location(const char* name) const;
-    const var_info& uniform(GLint location) const;
-    const var_info& uniform(const char* name) const;
-    const var_info& attribute(GLuint index) const;
-    const var_info& attribute(const char* name) const;
+    const var_info& uniform(var_ref ref) const;
+    const var_info& attribute(var_ref ref) const;
     const std::vector<var_info>& uniforms() const;
     const std::vector<var_info>& attributes() const;
 
