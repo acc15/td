@@ -25,7 +25,7 @@ add_library(td_core STATIC
     include/td/gl/enum.h src/td/gl/enum.cpp
     include/td/gl/drawer.h
     include/td/gl/sl_var_type.h src/td/gl/sl_var_type.cpp
-    include/td/util/plain_arithmetic_container.h include/td/gl/sl_var.h include/td/gl/sl_var_ref.h src/td/gl/sl_var_ref.cpp include/td/gl/sl_uniform_applier.h include/td/gl/sl_applier_util.h src/td/gl/drawer.cpp)
+    include/td/util/plain_arithmetic_container.h include/td/gl/sl_var.h include/td/gl/sl_var_ref.h src/td/gl/sl_var_ref.cpp include/td/gl/sl_uniform_applier.h include/td/gl/sl_applier_common.h src/td/gl/drawer.cpp include/td/gl/sl_attribute_applier.h)
 
 target_link_libraries(td_core OpenGL::GL OpenGL::GLU PNG::PNG GLEW::GLEW Eigen3::Eigen fmt::fmt )
 target_include_directories(td_core PUBLIC include)

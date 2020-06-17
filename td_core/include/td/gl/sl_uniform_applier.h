@@ -2,7 +2,7 @@
 
 #include "gl.h"
 #include "program.h"
-#include "sl_applier_util.h"
+#include "sl_applier_common.h"
 
 namespace td {
 

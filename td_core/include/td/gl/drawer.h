@@ -4,7 +4,8 @@
 
 #include "program.h"
 #include "sl_uniform_applier.h"
-#include "sl_applier_util.h"
+#include "sl_attribute_applier.h"
+#include "sl_applier_common.h"
 #include "../util/plain_arithmetic_container.h"
 
 namespace td {
@@ -30,7 +31,6 @@ public:
         return *this;
     }
 
-    /* overloads for uniform 2, 3 and 4 */
     template <typename T>
     drawer& uniform(sl_var_ref ref, const T& v1, const T& v2) {
         return uniform( ref, std::array<T, 2>({ v1, v2 }) );
@@ -45,6 +45,35 @@ public:
     drawer& uniform(sl_var_ref ref, const T& v1, const T& v2, const T& v3, const T& v4) {
         return uniform( ref, std::array<T, 4>({ v1, v2, v3 }) );
     }
+
+    template <typename T>
+    drawer& attribute(sl_var_ref ref, const T& value) {
+        typedef plain_arithmetic_container_caster<T> caster;
+        typedef sl_attribute_applier< typename caster::type > applier;
+        sl_apply_value<applier>( _p, _p.uniform(ref), caster::apply(value) );
+        return *this;
+    }
+
+    template <typename T>
+    drawer& attribute(sl_var_ref ref, const std::initializer_list<T>& value) {
+        return attribute(ref, std::vector<T>(value));
+    }
+
+    template <typename T>
+    drawer& attribute(sl_var_ref ref, const T& v1, const T& v2) {
+        return attribute( ref, std::array<T, 2>({ v1, v2 }) );
+    }
+
+    template <typename T>
+    drawer& attribute(sl_var_ref ref, const T& v1, const T& v2, const T& v3) {
+        return attribute( ref, std::array<T, 3>({ v1, v2, v3 }) );
+    }
+
+    template <typename T>
+    drawer& attribute(sl_var_ref ref, const T& v1, const T& v2, const T& v3, const T& v4) {
+        return attribute( ref, std::array<T, 4>({ v1, v2, v3 }) );
+    }
+
 
     /*
     template <typename T>
