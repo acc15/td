@@ -11,8 +11,8 @@ public:
     glfw_engine(GLFWwindow* window, const std::vector<std::string>& args);
 
 private:
-    const std::vector<std::string>& _args;
     GLFWwindow* _window;
+    const std::vector<std::string>& _args;
     friend td::engine;
 };
 

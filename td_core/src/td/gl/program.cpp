@@ -13,15 +13,15 @@ program::program() : _id(0) {
 
 program::program(program&& mv) noexcept:
         _id(mv._id),
-        _bind_attrs(mv._bind_attrs),
-        _internals(std::move(mv._internals)),
-        _externals(std::move(mv._externals)),
         _uniform_locs(std::move(mv._uniform_locs)),
         _attr_locs(std::move(mv._attr_locs)),
         _uniforms(std::move(mv._uniforms)),
         _attrs(std::move(mv._attrs)),
         _uniform_map(std::move(mv._uniform_map)),
-        _attr_map(std::move(mv._attr_map))
+        _attr_map(std::move(mv._attr_map)),
+        _bind_attrs(mv._bind_attrs),
+        _internals(std::move(mv._internals)),
+        _externals(std::move(mv._externals))
 {
     mv._id = 0;
 }
@@ -199,7 +199,8 @@ void program::populate_uniforms(GLuint id) {
     GLint uniform_count, uniform_max_length;
     glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &uniform_count);
     glGetProgramiv(id, GL_ACTIVE_UNIFORM_MAX_LENGTH, &uniform_max_length);
-    for (size_t i = 0; i < static_cast<size_t>(uniform_count); i++) {
+
+    for (GLuint i = 0; i < static_cast<GLuint>(uniform_count); i++) {
 
         std::string name(uniform_max_length, '\0');
         GLsizei uniform_length;
@@ -221,7 +222,7 @@ void program::populate_attributes(GLuint id) {
     GLint attribute_count, attribute_max_length;
     glGetProgramiv(id, GL_ACTIVE_ATTRIBUTES, &attribute_count);
     glGetProgramiv(id, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &attribute_max_length);
-    for (size_t i = 0; i < static_cast<size_t>(attribute_count); i++) {
+    for (GLuint i = 0; i < static_cast<size_t>(attribute_count); i++) {
 
         std::string name(attribute_max_length, '\0');
         GLsizei attr_length;
