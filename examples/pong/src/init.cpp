@@ -1,5 +1,3 @@
-#include <Eigen/Dense>
-
 #include <iostream>
 #include <td/engine/obj.h>
 #include <td/engine/engine.h>
@@ -8,22 +6,6 @@
 #include <td/gl/vbo_layout.h>
 #include <td/gl/enum.h>
 #include <td/gl/drawer.h>
-
-//class vbo_layout {
-//public:
-//
-//
-//
-//private:
-//    struct item {
-//        td::sl_var_ref ref;
-//        GLint size;
-//        GLenum type;
-//        size_t offset;
-//    };
-//
-//
-//};
 
 class pong_res: public td::obj {
 public:
