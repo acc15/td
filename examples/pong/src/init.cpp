@@ -8,26 +8,48 @@
 #include <td/gl/enum.h>
 #include <td/gl/drawer.h>
 
-#include <numeric>
-#include <stdexcept>
+//class vbo_layout {
+//public:
+//
+//
+//
+//private:
+//    struct item {
+//        td::sl_var_ref ref;
+//        GLint size;
+//        GLenum type;
+//        size_t offset;
+//    };
+//
+//
+//};
 
 class pong_res: public td::obj {
 public:
     static constexpr char TAG[] = "res";
 
-    td::shader POSITION_MVP_VERTEX = td::shader(td::shader_type::VERTEX, R"#(
-        in vec4 a_Position;
-        uniform mat4 u_mvpMatrix;
-        void main()
-        {
-            gl_Position = u_mvpMatrix * a_Position;
-        })#");
+    td::shader POSITION_MVP_VERTEX = td::shader(GL_VERTEX_SHADER, R"#(
+#version 330
 
-    td::shader SINGLE_COLOR_FRAGMENT = td::shader(td::shader_type::FRAGMENT, R"#(
-        uniform vec4 u_Color;
-        void main() {
-            gl_FragColor = u_Color;
-        })#");
+uniform mat3 u_mvpMatrix;
+in vec2 a_Position;
+
+void main()
+{
+    gl_Position = vec4(u_mvpMatrix * vec3(a_Position, 1.0), 1.0);
+}
+        )#");
+
+    td::shader SINGLE_COLOR_FRAGMENT = td::shader(GL_FRAGMENT_SHADER, R"#(
+#version 330
+
+uniform vec4 u_Color;
+out vec4 out_Color;
+
+void main() {
+    out_Color = u_Color;
+}
+        )#");
 
     td::program SINGLE_COLOR_PROGRAM = td::program()
         .add(POSITION_MVP_VERTEX)
@@ -40,30 +62,15 @@ public:
 
     void init() override {
 
-        SINGLE_COLOR_PROGRAM.id();
+        tag(TAG);
+
+        SINGLE_COLOR_PROGRAM.link();
 
         const size_t N_BUFS = 1;
         GLuint bufs[N_BUFS];
         glGenBuffers(N_BUFS, bufs);
 
         TRIANGLE_VBO.apply(bufs[0]);
-
-        Eigen::Vector4f m;
-        std::cout << m.rows() << " " << m.cols() << std::endl;
-
-        /*
-        td::drawer(SINGLE_COLOR_PROGRAM)
-            .uniform("u_mvpMatrix", { 1.f, 2.f, 3.f })
-            .attr(1, { 1.f });*/
-
-
-        // TRIANGLE_VBO.apply(); - calls glGenBuffers(1, &n);
-        // TRIANGLE_VBO.apply(bufs[0]);, GL_STATIC_DRAW); - remembers id
-
-        // TRIANGLE_VBO.reset() <<
-        // TRIANGLE_VBO.apply();, GL_STATIC_DRAW); - remembers id
-            //glBindBuffer(GL_ARRAY_BUFFER, id);
-            //glBufferData(GL_ARRAY_BUFFER, size(), data(), usage);
 
     }
 
@@ -90,7 +97,18 @@ public:
     }
 
     void render(const td::render_event& e) {
-        // glDrawElements()
+
+        Eigen::Matrix3f m = Eigen::Matrix3f::Identity();
+
+        auto* res = by_tag<pong_res>();
+
+        glVertexAttribPointer()
+
+        td::drawer(res->SINGLE_COLOR_PROGRAM)
+                .uniform("u_mvpMatrix", m)
+                .uniform("u_Color", { 1.f, 0.f, 0.f, 1.f });
+                // .attribute("a_Position", res->TRIANGLE_VBO, )
+
     }
 
 };
@@ -98,83 +116,11 @@ public:
 void td_init() {
 
 
-    td::program test_program = td::program()
-            .add(td::shader(td::shader_type::VERTEX, R"#(
-#version 330
-
-layout(location = 5) in vec2 b_Position;
-in vec2 a_Position;
-uniform mat3 u_mvpMatrix;
-
-void main() {
-    gl_Position = vec4(u_mvpMatrix * vec3(a_Position, 1.0) + vec3(b_Position, 1.0), 1.0);
-}
-            )#"))
-            .add(td::shader(td::shader_type::FRAGMENT, R"#(
-#version 330
-
-uniform vec4 u_Color;
-out vec4 color;
-
-void main() {
-    color = u_Color;
-}
-            )#"));
-
-    test_program.id();
-
-    td::drawer(test_program)
-        .uniform("u_mvpMatrix", { 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f });
-
-    const std::vector<td::sl_var>& uniforms = test_program.uniforms();
-    const std::vector<td::sl_var>& attrs = test_program.attributes();
-
-    std::cout << "Uniform count: " << uniforms.size() << std::endl;
-    for (size_t i = 0; i < uniforms.size(); i++) {
-        std::cout
-            << "Uniform [#" << i << "] name \"" << uniforms[i].name
-            << "\" type " << td::gl_enum_string(uniforms[i].type)
-            << " size " << uniforms[i].size
-            << " location " << uniforms[i].location
-            << std::endl;
-    }
-
-    std::cout << "Attribute count: " << attrs.size() << std::endl;
-    for (size_t i = 0; i < attrs.size(); i++) {
-        std::cout
-            << "Attribute [#" << i << "] name \"" << attrs[i].name
-            << "\" type " << td::gl_enum_string(attrs[i].type)
-            << " size " << attrs[i].size
-            << " location " << attrs[i].location
-            << std::endl;
-    }
-
-    glUseProgram(test_program.id());
-
-    GLfloat buf[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-
-    const td::sl_var& mvpMatrix = test_program.uniform("u_mvpMatrix");
-
-
-    /*
-    td::generic_element_applier<td::uniform_applier<GLfloat>>::apply(
-            buf,
-            sizeof(buf) / sizeof(typeof(buf[0])),
-            mvpMatrix.location,
-            mvpMatrix.type,
-            mvpMatrix.size
-    );*/
-
-    /*
     td::engine* e = td::engine::get();
     e->title("td_pong");
     e->add(new pong_res());
     e->add((new pong_scene())
         ->add(new ball())
-    );*/
-
-    /*
-    td::engine& e = td::engine::get();
-    e.scene(new pong_scene());*/
+    );
 
 }

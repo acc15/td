@@ -23,9 +23,14 @@ add_library(td_core STATIC
     include/td/core/assert.h
     include/td/gl/debug.h src/td/gl/debug.cpp
     include/td/gl/enum.h src/td/gl/enum.cpp
-    include/td/gl/drawer.h
+    include/td/gl/drawer.h src/td/gl/drawer.cpp
     include/td/gl/sl_var_type.h src/td/gl/sl_var_type.cpp
-    include/td/util/plain_arithmetic_container.h include/td/gl/sl_var.h include/td/gl/sl_var_ref.h src/td/gl/sl_var_ref.cpp include/td/gl/sl_uniform_applier.h include/td/gl/sl_applier_common.h src/td/gl/drawer.cpp include/td/gl/sl_attribute_applier.h)
+    include/td/util/plain_arithmetic_container.h
+    include/td/gl/sl_var.h src/td/gl/sl_var_ref.cpp
+    include/td/gl/sl_var_ref.h
+    include/td/gl/sl_applier_common.h
+    include/td/gl/sl_uniform_applier.h
+    include/td/gl/sl_attribute_applier.h include/td/gl/shader_type.h src/td/gl/shader_type.cpp)
 
 target_link_libraries(td_core OpenGL::GL OpenGL::GLU PNG::PNG GLEW::GLEW Eigen3::Eigen fmt::fmt )
 target_include_directories(td_core PUBLIC include)
@@ -36,10 +41,11 @@ add_executable(td_core_test
     test/td/core/static_buf.cpp
     test/td/gl/vbo_layout.cpp
     test/td/gl/program.cpp
+    test/td/gl/sl_var.cpp
     test/td/event/listener.cpp
     test/td/engine/obj.cpp
     test/td/test/call_rec.h
-        test/td/util/plain_arithmetic_container.cpp
+    test/td/util/plain_arithmetic_container.cpp
     test/td/test/call_rec.cpp)
 
 target_link_libraries(td_core_test Catch2::Catch2 td_core)

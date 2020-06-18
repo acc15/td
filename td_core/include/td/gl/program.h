@@ -21,7 +21,7 @@ public:
 
     program&& add(shader&& mv);
     program&& add(shader& cp);
-    program&& add(shader_type type, const char* src);
+    program&& add(const shader_type& type, const char* src);
     program&& vertex(const char* src);
     program&& fragment(const char* src);
     program&& bind_attr(const char* name, GLuint index);
@@ -36,8 +36,10 @@ public:
     const std::vector<sl_var>& uniforms() const;
     const std::vector<sl_var>& attributes() const;
 
-    GLuint id();
+    GLuint link();
     void rm();
+
+    GLuint id() const;
 
 protected:
 
