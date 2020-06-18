@@ -16,9 +16,13 @@ public:
 
 uniform mat3 u_mvpMatrix;
 in vec2 a_Position;
+in vec4 a_Color;
+
+out vec4 f_Color;
 
 void main()
 {
+    f_Color = a_Color;
     gl_Position = vec4(u_mvpMatrix * vec3(a_Position, 0), 1);
 }
         )#");
@@ -26,11 +30,11 @@ void main()
     td::shader SINGLE_COLOR_FRAGMENT = td::shader(GL_FRAGMENT_SHADER, R"#(
 #version 330
 
-uniform vec4 u_Color;
+in vec4 f_Color;
 out vec4 out_Color;
 
 void main() {
-    out_Color = u_Color;
+    out_Color = f_Color;
 }
         )#");
 
@@ -39,11 +43,11 @@ void main() {
         .add(SINGLE_COLOR_FRAGMENT);
 
     td::vbo<> TRIANGLE_VBO = td::vbo<>()
-            << 0.f << -1.f
-            << -1.f << 1.f
-            << 1.f << 1.f;
+            << 0.f << -1.f << 1.f << 0.f << 0.f << 1.f
+            << -1.f << 1.f << 0.f << 1.f << 0.f << 1.f
+            << 1.f << 1.f << 0.f << 0.f << 1.f << 1.f;
 
-    td::vbo_layout TRIANGLE_VBO_LAYOUT = td::vbo_layout().f2("a_Position");
+    td::vbo_layout TRIANGLE_VBO_LAYOUT = td::vbo_layout().f2("a_Position").f4("a_Color");
 
     void init() override {
 
@@ -102,9 +106,8 @@ public:
         auto* res = by_tag<pong_res>();
         td::drawer(res->SINGLE_COLOR_PROGRAM)
                 .uniform("u_mvpMatrix", { _scale, 0.f, 0.f, 0.f, _scale, 0.f, 0.f, 0.f, 1.f })
-                .uniform("u_Color", { 1.f, 0.f, 0.f, 1.f })
-                // .attribute("a_Position", res->TRIANGLE_VBO, 0, GL_FLOAT, 2, 2 * sizeof(GLfloat))
                 .attribute("a_Position", res->TRIANGLE_VBO, res->TRIANGLE_VBO_LAYOUT)
+                .attribute("a_Color", res->TRIANGLE_VBO, res->TRIANGLE_VBO_LAYOUT)
                 .draw(GL_TRIANGLES);
 
     }
