@@ -5,6 +5,7 @@
 #include <td/engine/engine.h>
 #include <td/gl/program.h>
 #include <td/gl/bo.h>
+#include <td/gl/vbo_layout.h>
 #include <td/gl/enum.h>
 #include <td/gl/drawer.h>
 
@@ -60,6 +61,8 @@ void main() {
             << -1.f << 1.f
             << 1.f << 1.f;
 
+    td::vbo_layout TRIANGLE_VBO_LAYOUT = td::vbo_layout().f2("a_Position");
+
     void init() override {
 
         tag(TAG);
@@ -103,7 +106,11 @@ public:
 
     void process(const td::process_event& e) {
         _scale += _dir;
-        if (_scale < 0.5f || _scale >= 1.f) {
+        if (_scale < 0.5f) {
+            _scale = 0.5f;
+            _dir = -_dir;
+        } else if (_scale > 1.f) {
+            _scale = 1.f;
             _dir = -_dir;
         }
     }
@@ -114,8 +121,8 @@ public:
         td::drawer(res->SINGLE_COLOR_PROGRAM)
                 .uniform("u_mvpMatrix", { _scale, 0.f, 0.f, 0.f, _scale, 0.f, 0.f, 0.f, 1.f })
                 .uniform("u_Color", { 1.f, 0.f, 0.f, 1.f })
-                .attribute("a_Position", res->TRIANGLE_VBO, 0, GL_FLOAT, 2, 2 * sizeof(GLfloat))
-                // .attribute("a_Position", res->TRIANGLE_VBO, res->TRIANGLE_LAYOUT)
+                // .attribute("a_Position", res->TRIANGLE_VBO, 0, GL_FLOAT, 2, 2 * sizeof(GLfloat))
+                .attribute("a_Position", res->TRIANGLE_VBO, res->TRIANGLE_VBO_LAYOUT)
                 .draw(GL_TRIANGLES);
 
     }
@@ -123,7 +130,6 @@ public:
 };
 
 void td_init() {
-
 
     td::engine* e = td::engine::get();
     e->title("td_pong");

@@ -56,7 +56,7 @@ TEST_CASE("program") {
 
 
     SECTION("add by lv") {
-        shader lv(shader_type::VERTEX, "test");
+        shader lv(GL_VERTEX_SHADER, "test");
 
         program p;
         p.add(lv);
@@ -69,7 +69,7 @@ TEST_CASE("program") {
     SECTION("add by rv") {
 
         program p;
-        p.add(shader(shader_type::VERTEX, "internal"));
+        p.add(shader(GL_VERTEX_SHADER, "internal"));
 
         CHECK(p.externals().empty());
         REQUIRE(!p.internals().empty());
@@ -79,7 +79,7 @@ TEST_CASE("program") {
 
     SECTION("move constructor") {
 
-        shader s(shader_type::FRAGMENT, "frag");
+        shader s(GL_FRAGMENT_SHADER, "frag");
 
         test_program p1;
         p1.set_id(5);
@@ -98,12 +98,12 @@ TEST_CASE("program") {
     SECTION("move semantics") {
 
         program cp;
-        cp.add(shader(shader_type::VERTEX, "vertex"));
+        cp.add(shader(GL_VERTEX_SHADER, "vertex"));
 
         CHECK( move_semantics_tester<td::program>(td::program()).type() == ref_type::RV );
-        CHECK( move_semantics_tester<td::program>(td::program().add(td::shader(shader_type::FRAGMENT, "fragment"))).type() == ref_type::RV );
+        CHECK( move_semantics_tester<td::program>(td::program().add(td::shader(GL_FRAGMENT_SHADER, "fragment"))).type() == ref_type::RV );
         CHECK( move_semantics_tester<td::program>(cp).type() == ref_type::LV );
-        CHECK( move_semantics_tester<td::program>(cp.add(td::shader(shader_type::FRAGMENT, "fragment"))).type() == ref_type::RV );
+        CHECK( move_semantics_tester<td::program>(cp.add(td::shader(GL_FRAGMENT_SHADER, "fragment"))).type() == ref_type::RV );
 
     }
 

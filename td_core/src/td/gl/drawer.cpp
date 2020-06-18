@@ -17,6 +17,11 @@ drawer& drawer::attribute(sl_var_ref ref, const td::vbo<>& vbo, uintptr_t offset
     return *this;
 }
 
+drawer& drawer::attribute(sl_var_ref ref, const td::vbo<>& vbo, const td::vbo_layout& layout) {
+    const vbo_layout::it& i = ref.has_name() ? layout.by_name(ref.name()) : layout.by_loc(ref.location());
+    return attribute(ref, vbo, i.offset, i.type, i.count, layout.stride());
+}
+
 void drawer::draw(GLenum mode, GLint offset, GLsizei count) {
     glDrawArrays(mode, offset, count);
 }

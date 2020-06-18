@@ -16,8 +16,8 @@ TEST_CASE("sl_var") {
     std::vector<td::sl_var> vec;
     for (size_t i = 0; i < N; i++) {
         vec.push_back({
-            static_cast<GLint>(i * 4),
-            static_cast<GLuint>(i * 4 + 1),
+            static_cast<GLuint>(i * 4),
+            static_cast<GLint>(i * 4 + 1),
             i * 4 + 2,
             static_cast<GLint>(i * 4 + 3), str[i] });
     }

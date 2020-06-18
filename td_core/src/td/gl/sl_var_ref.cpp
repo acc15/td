@@ -23,4 +23,20 @@ GLint sl_var_ref::attribute_location(const program& p) {
     return _location;
 }
 
+bool sl_var_ref::has_name() const {
+    return _name != nullptr;
+}
+
+bool sl_var_ref::has_location() const {
+    return _location != -1;
+}
+
+const char* sl_var_ref::name() const {
+    return _name;
+}
+
+GLint sl_var_ref::location() const {
+    return _location;
+}
+
 }

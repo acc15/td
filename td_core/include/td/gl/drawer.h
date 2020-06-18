@@ -2,6 +2,7 @@
 
 #include <fmt/format.h>
 
+#include "vbo_layout.h"
 #include "program.h"
 #include "sl_uniform_applier.h"
 #include "sl_attribute_applier.h"
@@ -80,6 +81,7 @@ public:
     }
 
     drawer& attribute(sl_var_ref ref, const td::vbo<>& vbo, uintptr_t offset, GLenum type, GLint size, GLsizei stride);
+    drawer& attribute(sl_var_ref ref, const td::vbo<>& vbo, const td::vbo_layout& layout);
 
     void draw(GLenum mode, GLint offset, GLsizei count);
     void draw(GLenum mode, GLsizei count);

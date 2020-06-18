@@ -14,6 +14,12 @@ public:
     GLint uniform_location(const program& p);
     GLint attribute_location(const program& p);
 
+    bool has_name() const;
+    bool has_location() const;
+
+    const char* name() const;
+    GLint location() const;
+
 private:
     GLint _location;
     const char* _name;
