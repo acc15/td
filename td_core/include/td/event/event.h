@@ -26,6 +26,15 @@ public:
 
 typedef generic_event<event_type::RENDER> render_event;
 class process_event : public generic_event<event_type::PROCESS> {
+
+    float _duration;
+
+
+public:
+
+    process_event(float duration);
+    float duration() const;
+
 };
 
 template<event_type Type>

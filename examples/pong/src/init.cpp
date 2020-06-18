@@ -7,6 +7,8 @@
 #include <td/gl/enum.h>
 #include <td/gl/drawer.h>
 
+#include <Eigen/Geometry>
+
 class pong_res: public td::obj {
 public:
     static constexpr char TAG[] = "res";
@@ -83,7 +85,10 @@ public:
 class ball: public td::obj {
 public:
     float _scale = 1.f;
-    float _dir = -0.02f;
+    float _dir = -0.5f;
+
+
+    Eigen::Affine2f _t;
 
     void init() override {
         listen(parent<pong_scene>(), &ball::process);
@@ -91,9 +96,9 @@ public:
     }
 
     void process(const td::process_event& e) {
-        _scale += _dir;
-        if (_scale < 0.5f) {
-            _scale = 0.5f;
+        _scale += _dir * e.duration();
+        if (_scale < 0.1f) {
+            _scale = 0.1f;
             _dir = -_dir;
         } else if (_scale > 1.f) {
             _scale = 1.f;
@@ -105,7 +110,7 @@ public:
 
         auto* res = by_tag<pong_res>();
         td::drawer(res->SINGLE_COLOR_PROGRAM)
-                .uniform("u_mvpMatrix", { _scale, 0.f, 0.f, 0.f, _scale, 0.f, 0.f, 0.f, 1.f })
+                .uniform("u_mvpMatrix", _t.data())
                 .attribute("a_Position", res->TRIANGLE_VBO, res->TRIANGLE_VBO_LAYOUT)
                 .attribute("a_Color", res->TRIANGLE_VBO, res->TRIANGLE_VBO_LAYOUT)
                 .draw(GL_TRIANGLES);

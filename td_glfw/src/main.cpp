@@ -6,7 +6,11 @@
 #include <td/glfw/glfw_engine.h>
 #include <td/gl/debug.h>
 
+#include <chrono>
+
 extern void td_init();
+
+typedef std::chrono::high_resolution_clock process_clock;
 
 void draw_frame() {
     glClearColor(0, 0, 0, 1);
@@ -14,8 +18,8 @@ void draw_frame() {
     td::engine::get()->emit(td::render_event());
 }
 
-void process_frame() {
-    td::engine::get()->emit(td::process_event());
+void process_frame(float duration) {
+    td::engine::get()->emit(td::process_event(duration));
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -57,6 +61,7 @@ bool init_glew(const std::vector<std::string>& args) {
 int run_glfw_window(GLFWwindow* window, const std::vector<std::string>& args) {
 
     glfwMakeContextCurrent(window);
+    // glfwSwapInterval( 0 );
     if (!init_glew(args)) {
         return -1;
     }
@@ -74,17 +79,24 @@ int run_glfw_window(GLFWwindow* window, const std::vector<std::string>& args) {
         td_init();
 
         glfwShowWindow(window);
+
+        float frame_duration = 0;
+        double frame_time = glfwGetTime();
         while (!glfwWindowShouldClose(window)) {
 
             int width, height;
             glfwGetFramebufferSize(window, &width, &height);
             glViewport(0, 0, width, height);
 
+            process_frame(frame_duration);
             draw_frame();
-            process_frame();
 
             glfwSwapBuffers(window);
             glfwPollEvents();
+
+            double current_frame_time = glfwGetTime();
+            frame_duration = static_cast<float>(current_frame_time - frame_time);
+            frame_time = current_frame_time;
 
         }
 
