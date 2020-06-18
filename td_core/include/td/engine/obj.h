@@ -8,6 +8,7 @@
 #include "child_obj.h"
 #include "parent_obj.h"
 #include "tag_registry.h"
+#include "../core/assert.h"
 
 namespace td {
 
@@ -16,7 +17,7 @@ public:
 
     template<typename E>
     void forward(emitter *e) {
-        assert(e != this); // can't forward events from self (infinite loop)
+        TD_ASSERT(dynamic_cast<obj*>(e) != this, "can't forward events from self (infinite loop)");
         listen(e, [this](const E &e) -> void { this->emit(e); });
     }
 

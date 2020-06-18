@@ -7,6 +7,7 @@
 #include "sl_attribute_applier.h"
 #include "sl_applier_common.h"
 #include "../util/plain_arithmetic_container.h"
+#include "bo.h"
 
 namespace td {
 
@@ -50,7 +51,11 @@ public:
     drawer& attribute(sl_var_ref ref, const T& value) {
         typedef plain_arithmetic_container_caster<T> caster;
         typedef sl_attribute_applier< typename caster::type > applier;
+
+        const sl_var& v = _p.uniform(ref);
+        glDisableVertexAttribArray(v.location);
         sl_apply_value<applier>( _p, _p.uniform(ref), caster::apply(value) );
+
         return *this;
     }
 
@@ -74,6 +79,11 @@ public:
         return attribute( ref, std::array<T, 4>({ v1, v2, v3 }) );
     }
 
+    drawer& attribute(sl_var_ref ref, const td::vbo<>& vbo, uintptr_t offset, GLenum type, GLint size, GLsizei stride);
+
+    void draw(GLenum mode, GLint offset, GLsizei count);
+    void draw(GLenum mode, GLsizei count);
+    void draw(GLenum mode);
 
     /*
     template <typename T>
@@ -89,6 +99,7 @@ public:
 
 private:
     program& _p;
+    GLsizei _count = -1;
 
 };
 

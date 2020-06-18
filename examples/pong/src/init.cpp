@@ -36,7 +36,7 @@ in vec2 a_Position;
 
 void main()
 {
-    gl_Position = vec4(u_mvpMatrix * vec3(a_Position, 1.0), 1.0);
+    gl_Position = vec4(u_mvpMatrix * vec3(a_Position, 0), 1);
 }
         )#");
 
@@ -82,6 +82,7 @@ public:
     void init() override {
         listen(td::engine::get(), &pong_scene::key_down);
         forward<td::render_event>(td::engine::get());
+        forward<td::process_event>(td::engine::get());
     }
 
     void key_down(const td::key_down_event& e) {
@@ -92,22 +93,30 @@ public:
 
 class ball: public td::obj {
 public:
+    float _scale = 1.f;
+    float _dir = -0.02f;
+
     void init() override {
+        listen(parent<pong_scene>(), &ball::process);
         listen(parent<pong_scene>(), &ball::render);
+    }
+
+    void process(const td::process_event& e) {
+        _scale += _dir;
+        if (_scale < 0.5f || _scale >= 1.f) {
+            _dir = -_dir;
+        }
     }
 
     void render(const td::render_event& e) {
 
-        Eigen::Matrix3f m = Eigen::Matrix3f::Identity();
-
         auto* res = by_tag<pong_res>();
-
-        glVertexAttribPointer()
-
         td::drawer(res->SINGLE_COLOR_PROGRAM)
-                .uniform("u_mvpMatrix", m)
-                .uniform("u_Color", { 1.f, 0.f, 0.f, 1.f });
-                // .attribute("a_Position", res->TRIANGLE_VBO, )
+                .uniform("u_mvpMatrix", { _scale, 0.f, 0.f, 0.f, _scale, 0.f, 0.f, 0.f, 1.f })
+                .uniform("u_Color", { 1.f, 0.f, 0.f, 1.f })
+                .attribute("a_Position", res->TRIANGLE_VBO, 0, GL_FLOAT, 2, 2 * sizeof(GLfloat))
+                // .attribute("a_Position", res->TRIANGLE_VBO, res->TRIANGLE_LAYOUT)
+                .draw(GL_TRIANGLES);
 
     }
 
