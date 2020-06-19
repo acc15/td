@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 namespace td {
 
 enum class event_type {
@@ -7,7 +9,8 @@ enum class event_type {
     PROCESS,
     KEY_DOWN,
     KEY_UP,
-    KEY_REPEAT
+    KEY_REPEAT,
+    RESIZE
 };
 
 class event {
@@ -26,29 +29,26 @@ public:
 
 typedef generic_event<event_type::RENDER> render_event;
 class process_event : public generic_event<event_type::PROCESS> {
-
-    float _duration;
-
-
 public:
-
     process_event(float duration);
-    float duration() const;
-
+    float duration;
 };
+
+class resize_event : public generic_event<event_type::RESIZE> {
+public:
+    resize_event(size_t w, size_t h);
+    size_t width;
+    size_t height;
+};
+
 
 template<event_type Type>
 class key_event: public generic_event<Type> {
 public:
-    key_event(int scan_code): _scan(scan_code) {
+    key_event(int sc): scan_code(sc) {
     }
 
-    int scan_code() const {
-        return _scan;
-    }
-
-private:
-    int _scan;
+    int scan_code;
 
 };
 

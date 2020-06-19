@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 
+#include <Eigen/Dense>
+
 #include "../event/emitter.h"
 #include "parent_obj.h"
 
@@ -15,6 +17,8 @@ public:
     ~engine() override;
 
     engine* add(child_obj* c);
+
+    Eigen::Vector2f viewport() const;
 
     // TODO use own key codes with GLFW mapping
     bool is_key_pressed(int code) const;

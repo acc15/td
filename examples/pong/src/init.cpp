@@ -45,9 +45,9 @@ void main() {
         .add(SINGLE_COLOR_FRAGMENT);
 
     td::vbo<> TRIANGLE_VBO = td::vbo<>()
-            << 0.f << -1.f << 1.f << 0.f << 0.f << 1.f
-            << -1.f << 1.f << 0.f << 1.f << 0.f << 1.f
-            << 1.f << 1.f << 0.f << 0.f << 1.f << 1.f;
+            << cosf(2*M_PI / 3 * 0) * 50.f << sinf(2*M_PI / 3 * 0) * 50.f << 1.f << 0.f << 0.f << 1.f
+            << cosf(2*M_PI / 3 * 1) * 50.f << sinf(2*M_PI / 3 * 1) * 50.f << 0.f << 1.f << 0.f << 1.f
+            << cosf(2*M_PI / 3 * 2) * 50.f << sinf(2*M_PI / 3 * 2) * 50.f << 0.f << 0.f << 1.f << 1.f;
 
     td::vbo_layout TRIANGLE_VBO_LAYOUT = td::vbo_layout().f2("a_Position").f4("a_Color");
 
@@ -70,14 +70,29 @@ void main() {
 
 class pong_scene: public td::obj {
 public:
+
+    static constexpr char TAG[] = "scene";
+
+    Eigen::Affine2f _world;
+
     void init() override {
-        listen(td::engine::get(), &pong_scene::key_down);
+        tag(TAG);
+
+        listen(parent<td::emitter>(), &pong_scene::key_down);
+        listen(parent<td::emitter>(), &pong_scene::resize);
+
         forward<td::render_event>(td::engine::get());
         forward<td::process_event>(td::engine::get());
     }
 
+    void resize(const td::resize_event& e) {
+        const Eigen::Vector2f vp = td::engine::get()->viewport();
+        _world.setIdentity();
+        _world = _world.scale(vp / 2).inverse();
+    }
+
     void key_down(const td::key_down_event& e) {
-        std::cout << "key pressed " << e.scan_code() << std::endl;
+        std::cout << "key pressed " << e.scan_code << std::endl;
     }
 
 };
@@ -85,7 +100,9 @@ public:
 class ball: public td::obj {
 public:
     float _scale = 1.f;
+    float _rot = 0.f;
     float _dir = -0.5f;
+    float _rot_speed = 1;
 
 
     Eigen::Affine2f _t;
@@ -96,7 +113,7 @@ public:
     }
 
     void process(const td::process_event& e) {
-        _scale += _dir * e.duration();
+        _scale += _dir * e.duration;
         if (_scale < 0.1f) {
             _scale = 0.1f;
             _dir = -_dir;
@@ -104,17 +121,25 @@ public:
             _scale = 1.f;
             _dir = -_dir;
         }
+        _rot += _rot_speed * e.duration;
+        if (_rot > 2 * M_PI) {
+            _rot -= (2 * M_PI);
+        }
+
+        _t.setIdentity();
+        _t.scale(_scale).rotate(_rot);
+
+        _t = by_tag<pong_scene>()->_world * _t;
+
     }
 
     void render(const td::render_event& e) {
-
         auto* res = by_tag<pong_res>();
         td::drawer(res->SINGLE_COLOR_PROGRAM)
-                .uniform("u_mvpMatrix", _t.data())
+                .uniform("u_mvpMatrix", _t.matrix())
                 .attribute("a_Position", res->TRIANGLE_VBO, res->TRIANGLE_VBO_LAYOUT)
                 .attribute("a_Color", res->TRIANGLE_VBO, res->TRIANGLE_VBO_LAYOUT)
                 .draw(GL_TRIANGLES);
-
     }
 
 };

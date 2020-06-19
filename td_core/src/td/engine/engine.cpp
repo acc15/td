@@ -1,6 +1,7 @@
 #include <cassert>
 
 #include <td/engine/engine.h>
+#include <td/gl/gl.h>
 
 namespace td {
 
@@ -26,6 +27,10 @@ engine* engine::add(child_obj* c) {
     return this;
 }
 
-
+Eigen::Vector2f engine::viewport() const {
+    GLint vp[4];
+    glGetIntegerv(GL_VIEWPORT, vp);
+    return Eigen::Vector2f(static_cast<float>(vp[2]), static_cast<float>(vp[3]));
+}
 
 }

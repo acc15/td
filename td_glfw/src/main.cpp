@@ -58,6 +58,11 @@ bool init_glew(const std::vector<std::string>& args) {
     return true;
 }
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+    td::engine::get()->emit(td::resize_event(width, height));
+}
+
 int run_glfw_window(GLFWwindow* window, const std::vector<std::string>& args) {
 
     glfwMakeContextCurrent(window);
@@ -65,7 +70,6 @@ int run_glfw_window(GLFWwindow* window, const std::vector<std::string>& args) {
     if (!init_glew(args)) {
         return -1;
     }
-
 
     try {
 
@@ -78,15 +82,17 @@ int run_glfw_window(GLFWwindow* window, const std::vector<std::string>& args) {
 
         td_init();
 
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        framebuffer_size_callback(window, width, height);
+
+        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
         glfwShowWindow(window);
 
         float frame_duration = 0;
         double frame_time = glfwGetTime();
         while (!glfwWindowShouldClose(window)) {
-
-            int width, height;
-            glfwGetFramebufferSize(window, &width, &height);
-            glViewport(0, 0, width, height);
 
             process_frame(frame_duration);
             draw_frame();
