@@ -6,11 +6,7 @@
 #include <td/glfw/glfw_engine.h>
 #include <td/gl/debug.h>
 
-#include <chrono>
-
 extern void td_init();
-
-typedef std::chrono::high_resolution_clock process_clock;
 
 void draw_frame() {
     glClearColor(0, 0, 0, 1);
