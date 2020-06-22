@@ -1,5 +1,4 @@
-#define _USE_MATH_DEFINES // for C++
-#include <cmath>
+
 
 #include <iostream>
 
@@ -11,9 +10,7 @@
 #include <td/gl/bo.h>
 #include <td/gl/vbo_layout.h>
 #include <td/gl/drawer.h>
-
-
-static constexpr float TWO_M_PI = 2.f * static_cast<float>(M_PI);
+#include <td/geom/ngon.h>
 
 class pong_res: public td::obj {
 public:
@@ -50,12 +47,12 @@ void main() {
         .add(POSITION_MVP_VERTEX)
         .add(SINGLE_COLOR_FRAGMENT);
 
-    static constexpr float TRIANGLE_R = 200.f;
+    td::ngon<float, 3> TRIANGLE = td::ngon<float, 3>(200.f);
 
     td::vbo<> TRIANGLE_VBO = td::vbo<>()
-            << cosf(TWO_M_PI / 3.f * 0.f) * TRIANGLE_R << sinf(TWO_M_PI / 3.f * 0.f) * TRIANGLE_R << 1.f << 0.f << 0.f << 1.f
-            << cosf(TWO_M_PI / 3.f * 1.f) * TRIANGLE_R << sinf(TWO_M_PI / 3.f * 1.f) * TRIANGLE_R << 0.f << 1.f << 0.f << 1.f
-            << cosf(TWO_M_PI / 3.f * 2.f) * TRIANGLE_R << sinf(TWO_M_PI / 3.f * 2.f) * TRIANGLE_R << 0.f << 0.f << 1.f << 1.f;
+            << TRIANGLE.p[0] << 1.f << 0.f << 0.f << 1.f
+            << TRIANGLE.p[1] << 0.f << 1.f << 0.f << 1.f
+            << TRIANGLE.p[2] << 0.f << 0.f << 1.f << 1.f;
 
     td::vbo_layout TRIANGLE_VBO_LAYOUT = td::vbo_layout().f2("a_Position").f4("a_Color");
 
@@ -133,8 +130,8 @@ public:
             _dir = -_dir;
         }
         _rot += _rot_speed * e.duration;
-        if (_rot > TWO_M_PI) {
-            _rot -= TWO_M_PI;
+        if (_rot > td::float_math_const::TWO_PI) {
+            _rot -= td::float_math_const::TWO_PI;
         }
 
         _t.setIdentity();

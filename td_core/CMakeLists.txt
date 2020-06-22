@@ -9,7 +9,7 @@ add_library(td_core STATIC
     include/td/gl/vbo_layout.h src/td/gl/vbo_layout.cpp
     include/td/core/buf.h
     include/td/core/color.h
-    include/td/event/event.h
+    include/td/event/event.h src/td/event/event.cpp
     include/td/event/listener_registry.h src/td/event/listener_registry.cpp
     include/td/event/listener.h src/td/event/listener.cpp
     include/td/event/emitter.h src/td/event/emitter.cpp
@@ -30,7 +30,10 @@ add_library(td_core STATIC
     include/td/gl/sl_var_ref.h
     include/td/gl/sl_applier_common.h
     include/td/gl/sl_uniform_applier.h
-    include/td/gl/sl_attribute_applier.h include/td/gl/shader_type.h src/td/gl/shader_type.cpp include/td/gl/vbo_layout.h src/td/gl/vbo_layout.cpp src/td/event/event.cpp)
+    include/td/gl/sl_attribute_applier.h
+    include/td/gl/shader_type.h src/td/gl/shader_type.cpp
+    include/td/gl/vbo_layout.h src/td/gl/vbo_layout.cpp
+    include/td/core/math_const.h include/td/geom/ngon.h)
 
 target_link_libraries(td_core OpenGL::GL OpenGL::GLU PNG::PNG GLEW::GLEW Eigen3::Eigen fmt::fmt )
 target_include_directories(td_core PUBLIC include)
