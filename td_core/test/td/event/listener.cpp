@@ -71,7 +71,7 @@ TEST_CASE("listener") {
 
         l1.listen(&e1, &test_listener::render);
         e1.emit(render_event());
-        e1.emit(process_event());
+        e1.emit(process_event(0.016f));
 
         REQUIRE(l1.render_calls == 1);
         REQUIRE(l1.process_calls == 0);
@@ -120,7 +120,7 @@ TEST_CASE("listener") {
         l1.listen(&e2, &test_listener::process);
 
         e1.emit(render_event());
-        e2.emit(process_event());
+        e2.emit(process_event(0.016f));
 
         REQUIRE(l1.render_calls == 1);
         REQUIRE(l1.process_calls == 1);
