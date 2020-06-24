@@ -7,3 +7,12 @@
 [submodule "ext/fmt"]
 	path = ext/fmt
 	url = git@github.com:fmtlib/fmt.git
+[submodule "ext/zlib"]
+	path = ext/zlib
+	url = git@github.com:madler/zlib.git
+[submodule "ext/libpng"]
+	path = ext/libpng
+	url = git@github.com:glennrp/libpng.git
+[submodule "ext/libjpeg-turbo"]
+	path = ext/libjpeg-turbo
+	url = git@github.com:libjpeg-turbo/libjpeg-turbo.git

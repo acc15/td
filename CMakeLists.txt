@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
+
+cmake_policy(SET CMP0002 OLD)
+
 project(td)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -29,15 +32,33 @@ add_subdirectory(ext/glfw EXCLUDE_FROM_ALL)
 # {fmt}
 add_subdirectory(ext/fmt EXCLUDE_FROM_ALL)
 
+# OpenGL
 find_package(OpenGL REQUIRED)
 
+# GLEW
 set(GLEW_VERBOSE TRUE)
 set(GLEW_USE_STATIC_LIBS ${WIN32})
 find_package(GLEW REQUIRED)
 
-find_package(PNG REQUIRED)
+# zlib
+add_subdirectory(ext/zlib EXCLUDE_FROM_ALL)
+
+# libpng
+option(PNG_SHARED OFF)
+option(PNG_EXECUTABLES OFF)
+option(PNG_TESTS OFF)
+add_subdirectory(ext/libpng EXCLUDE_FROM_ALL)
+
+# libjpeg-turbo
+#option(WITH_SIMD OFF)
+#option(ENABLE_SHARED OFF)
+#set(CMAKE_INSTALL_DOCDIR "${CMAKE_BINARY_DIR}/libjpeg-turbo")
+#add_subdirectory(ext/libjpeg-turbo EXCLUDE_FROM_ALL)
+
+# Eigen
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
+# Sub-projects
 add_subdirectory(td_rc)
 add_subdirectory(td_core)
 add_subdirectory(td_glfw)

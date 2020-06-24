@@ -35,7 +35,7 @@ add_library(td_core STATIC
     include/td/gl/vbo_layout.h src/td/gl/vbo_layout.cpp
     include/td/core/math_const.h include/td/geom/ngon.h)
 
-target_link_libraries(td_core OpenGL::GL OpenGL::GLU PNG::PNG GLEW::GLEW Eigen3::Eigen fmt::fmt )
+target_link_libraries(td_core OpenGL::GL OpenGL::GLU png_static turbojpeg-static GLEW::GLEW Eigen3::Eigen fmt::fmt )
 target_include_directories(td_core PUBLIC include)
 
 add_executable(td_core_test
