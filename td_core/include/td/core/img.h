@@ -4,8 +4,7 @@
 #include <cstddef>
 
 #include <istream>
-#include <fstream>
-#include <memory>
+#include <vector>
 
 namespace td {
 
@@ -19,7 +18,7 @@ public:
         GRAY_ALPHA,
         PALLETE,
         RGB,
-        RGB_ALPHA
+        RGBA
     };
 
 private:
@@ -29,7 +28,7 @@ private:
     color_type _ctype;
     uint8_t _channels;
 
-    std::unique_ptr<uint8_t[]> _data;
+    std::vector<uint8_t> _data;
 
 
 public:
@@ -43,7 +42,7 @@ public:
     color_type ctype() const;
     size_t width() const;
     size_t height() const;
-    uint8_t* data();
+    const uint8_t* data() const;
 
 };
 

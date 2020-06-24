@@ -20,7 +20,7 @@ img::color_type png_color_type_to_img_color_type(png_byte ct) {
             return img::color_type::RGB;
 
         case PNG_COLOR_TYPE_RGB_ALPHA:
-            return img::color_type::RGB_ALPHA;
+            return img::color_type::RGBA;
 
         default:
             return img::color_type::UNKNOWN;
@@ -33,7 +33,7 @@ void png_read_from_stream(png_structp png_ptr, png_bytep buf, size_t sz) {
 }
 
 
-img::img() : _width(0), _height(0), _depth(0), _ctype(img::color_type::UNKNOWN), _channels(0), _data(nullptr) {
+img::img() : _width(0), _height(0), _depth(0), _ctype(img::color_type::UNKNOWN), _channels(0) {
 }
 
 
@@ -62,11 +62,11 @@ void img::load_png(std::istream &in) {
     _channels = png_get_channels(png_ptr, info_ptr);
     _ctype = png_color_type_to_img_color_type(png_get_color_type(png_ptr, info_ptr));
 
-    _data = std::make_unique<uint8_t[]>(row_bytes * _height);
+    _data.resize(row_bytes * _height);
 
     std::unique_ptr<png_bytep[]> ptrs = std::make_unique<png_bytep[]>(_height);
 
-    png_bytep data_ptr = _data.get();
+    png_bytep data_ptr = _data.data();
     for (size_t i = 0; i < _height; i++) {
         ptrs[i] = data_ptr + (i * row_bytes);
     }
@@ -77,8 +77,6 @@ void img::load_png(std::istream &in) {
     ptrs.reset();
 
     png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
-
-
 }
 
 size_t img::height() const {
@@ -101,8 +99,8 @@ img::color_type img::ctype() const {
     return _ctype;
 }
 
-uint8_t* img::data() {
-    return _data.get();
+const uint8_t* img::data() const {
+    return _data.data();
 }
 
 

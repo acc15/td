@@ -229,7 +229,7 @@ TEST_CASE("listener") {
         l1.mute(t1);
 
         e1.emit(render_event());
-        e2.emit(process_event());
+        e2.emit(process_event(1.f));
 
         REQUIRE( l1.render_calls == 0 );
         REQUIRE( l1.process_calls == 1 );
